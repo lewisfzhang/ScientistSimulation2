@@ -34,13 +34,16 @@ public class Model {
 	
 	// Model Step
     public void step() {
-    	age_scientists();
-    	birth_new_scientists();
+    	age_scientists(); // add one year to every scientist in the list
+    	birth_new_scientists(); // birth a new cohort of scientists
+    	birth_new_ideas(); // birth a new set of ideas to be added
+    	set_perceived_rewards(); // update each scientists reward list
     }
     
     public void age_scientists() {
     	for(int i = 0; i < scientist_list.size() + 1; i++) {
-    		
+    		Scientist scientist = scientist_list.get(i);
+    		scientist.age++;
     	}
     }
     
@@ -48,11 +51,32 @@ public class Model {
     	for(int i = 0; i < num_sci; i++) {
     		Scientist scientist = new Scientist();
     		scientist.age = 0;
-    		// unclear if the following inputs are right, but structure is correct
-    		scientist.idea_max_var = getRandomNumber(idea_max);
-    		scientist.idea_mean_var = getRandomNumber(idea_mean);
-    		scientist.learning_speed = getRandomNumber(k_mean);
+    		// need to figure out inputs to randomize these terms in a coherent way
+    		scientist.idea_max_var = getRandomNumber();
+    		scientist.idea_mean_var = getRandomNumber();
+    		scientist.learning_speed = getRandomNumber();
     		scientist_list.add(scientist);
+    	}
+    }
+    
+    public void birth_new_ideas() {
+    	for(int i = 0; i < ideas_per_time; i++) {
+    		Idea idea = new Idea();
+    		idea.idea_mean = getRandomNumber(idea_mean);
+    		idea.idea_max = getRandomNumber(idea_max);
+    		idea.idea_k = getRandomNumber(k_mean);
+    		idea.total_effort = 0;
+    		idea.num_k = 0;
+    		idea_list.add(idea);
+    	}
+    }
+    
+    public void set_perceived_rewards() {
+    	for(int i = 0; i < scientist_list.size() + 1; i++) {
+    		Scientist scientist = scientist_list.get(i);
+    		for(int j = 0; j < idea_list.size() + 1; j++) {
+    			
+    		}
     	}
     }
     
