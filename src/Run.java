@@ -1,6 +1,10 @@
 public class Run {
     public static void main(String[] args) {
-        System.out.println("hello world");
-        System.out.println("finally");
+        Config config = new Config();
+        Model model = new Model(config);
+
+        for (int i=0; i<config.time_periods; i++) {
+            model.step();
+        }
     }
 }

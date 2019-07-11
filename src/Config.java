@@ -12,5 +12,5 @@ public class Config {
     public int k_mean = 37;
 
     public boolean equal_returns = true;
-    public int opt_num = 4;
+    public int opt_num = 1;
 }

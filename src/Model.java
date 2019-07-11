@@ -6,4 +6,7 @@ public class Model {
     public Model(Config config) {
 
     }
+    public void step() {
+
+    }
 }
