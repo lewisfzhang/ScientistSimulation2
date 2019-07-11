@@ -14,7 +14,6 @@ public class Model {
 		idea_max = config.idea_max;
 		start_effort_mean = config.start_effort_mean;
 		k_mean = config.k_mean;
-		
     }
 	
 	public ArrayList<Scientist> scientist_list;
