@@ -17,7 +17,7 @@ public class Scientist {
         this.model = model;
     }
     public void step() {
-        int num_ideas = model.ideas.size();
+        int num_ideas = model.idea_list.size();
         idea_eff_tp = new int[num_ideas];
         idea_eff_all = new int[num_ideas];
 
