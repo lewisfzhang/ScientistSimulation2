@@ -20,6 +20,7 @@ public class Model {
 	public int learning_rate_mean;
 	public int tp = 0;
 	public int ideas_last_tp;
+	public boolean equal_returns;
 	
 	public ArrayList<Scientist> scientist_list;
 	public ArrayList<Idea> idea_list;
@@ -35,6 +36,7 @@ public class Model {
 		start_effort_mean = config.start_effort_mean;
 		k_mean = config.k_mean;
 		learning_rate_mean = config.learning_rate_mean;
+		equal_returns = config.equal_returns;
     }
 	
 	// Model Step
@@ -120,16 +122,49 @@ public class Model {
     		if(idea.effort_by_tp.get(tp) != 0) {
     			int start_effort = idea.total_effort - idea.effort_by_tp.get(tp);
     			int end_effort = idea.total_effort;
-    			double idea_returns = idea.get_returns(idea.idea_mean,idea.idea_sds,idea.idea_max,start_effort,end_effort);
+    			double idea_returns = idea.get_returns(idea.idea_mean, idea.idea_sds, idea.idea_max, start_effort, end_effort);
+    			process_winners(i, idea_returns);
     		}
+    	}
+    	for(int s = 0; s < scientist_list.size(); s++) {
+    		Scientist sci = scientist_list.get(s);
+    		double tp_returns = 0;
+    		for(int r = 0; r < sci.returns_tp.size(); r++) {
+    			tp_returns += sci.returns_tp.get(r);
+    		}
+    		sci.overall_returns_tp.add(tp_returns);
     	}
     }
     
-    // Generates a random number within a range of [0, max]
-    public int getRandomNumber(int max) {
-		double x = Math.random();
-		int min = 0;
-		int num = (int)(x * ((max - min) + 1)) + min;
-		return num;
-	}
+    public void process_winners(int iidx, double idea_returns) {
+    	ArrayList<Integer> list_of_investors = new ArrayList<Integer>();
+    	for(int s = 0; s < scientist_list.size(); s++) {
+    		Scientist sci = scientist_list.get(s);
+    		if(sci.idea_eff_tp.get(iidx) != 0) {
+    			list_of_investors.add(s);
+    		}
+    	}
+    	if(equal_returns) {
+    		int total_effort_invested = 0;
+    		for(int idx = 0; idx < list_of_investors.size(); idx++) {
+    			int sci_id = list_of_investors.get(idx);
+    			Scientist sci = scientist_list.get(sci_id);
+    			total_effort_invested += sci.idea_eff_tp.get(iidx);
+    		}
+    		for(int idx = 0; idx < list_of_investors.size(); idx++) {
+    			int sci_id = list_of_investors.get(idx);
+    			Scientist sci = scientist_list.get(sci_id);
+    			double individual_proportion = sci.idea_eff_tp.get(iidx) / total_effort_invested;
+    			double individual_returns = individual_proportion * total_effort_invested;
+    			arr_increment_double(sci.returns_tp, iidx, individual_returns);
+    			arr_increment_double(sci.returns_tot, iidx, individual_returns);
+    		}
+    	}
+    	else {
+    		int oldest_scientist_id = list_of_investors.get(0);
+    		Scientist sci = scientist_list.get(oldest_scientist_id);
+    		arr_increment_double(sci.returns_tp, iidx, idea_returns);
+			arr_increment_double(sci.returns_tot, iidx, idea_returns);
+    	}
+    }
 }
