@@ -23,5 +23,4 @@ public class Config {
     public boolean equal_returns = true;
     public int opt_num = 0;
     
-    
 }
