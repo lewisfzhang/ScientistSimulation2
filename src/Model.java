@@ -21,11 +21,13 @@ public class Model {
 	public int tp = 0;
 	public int ideas_last_tp;
 	public boolean equal_returns;
+	public Config config;
 	
 	public ArrayList<Scientist> scientist_list;
 	public ArrayList<Idea> idea_list;
 	
 	public Model(Config config) {
+		this.config = config;
 		num_sci = config.sci_rate;
 		time_periods = config.time_periods;
 		ideas_per_time = config.ideas_per_time;
