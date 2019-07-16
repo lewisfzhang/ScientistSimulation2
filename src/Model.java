@@ -65,7 +65,7 @@ public class Model {
     		idea.idea_max = getRandomNumber(idea_max);
     		idea.idea_k = getRandomNumber(k_mean);
     		idea.total_effort = 0;
-    		idea.num_k = 0;
+    		idea.num_k = 0;n
     		idea_list.add(idea);
     	}
     }
