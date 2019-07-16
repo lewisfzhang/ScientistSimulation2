@@ -31,6 +31,7 @@ class Config {
         for (int i = 0; i < this.seed_array.length; i++) {
             this.seed_array[i] = r.nextInt();
         }
+        this.next_seed_idx = 0; // keeps track of the last seed that was used
     }
 
     public int get_next_seed() {

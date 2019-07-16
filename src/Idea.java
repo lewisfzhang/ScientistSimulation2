@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class Idea {
     // instrinsic variables
     public int idea_mean; // aka inflection point
@@ -5,15 +8,33 @@ public class Idea {
     public int idea_sds; 
     public int idea_k; // entry cost/barrier to enter an idea
 
-    // data collecting variables
-    public int total_effort; // Total amount of effort invested in idea to that point
-    public int num_k; // number of scientists who have paid K for the idea and have the ability to invest
-    
-    public void init(Model model) {
-    	this.idea_mean = 0; // NEED: poisson with lambda from model
-    	this.idea_max = 0; // NEED: poisson with max from model
-    	this.idea_sds = 0; // NEED: poisson with sds from model
-    	this.idea_k = 0; // NEED: poisson with k mean from model
-    	// create_idea_collectors(model.time_periods);
+    // idea collectors
+    public int total_effort; // total effort invested in idea to date, also accessed by optimization algorithms
+    public ArrayList<Integer> effort_by_tp; // total effort invested in idea by period
+    public ArrayList<Integer> num_k_by_tp; // number people who paid investment cost by period
+
+    public Idea(Model model) {
+    	this.idea_mean = Functions.poisson(model.idea_mean);
+    	this.idea_max = Functions.poisson(model.idea_max);
+    	this.idea_sds = Functions.poisson(model.idea_sds);
+    	this.idea_k = Functions.poisson(model.k_mean);
+
+        this.total_effort = 0;
+        this.effort_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
+        this.num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
+    }
+
+    public static double get_returns(int means, int sds, int max, int start_idx, int end_idx) {
+        double start = max * logistic_cdf(start_idx, means, sds);
+        double end = max * logistic_cdf(end_idx, means, sds);
+        return end - start;
+    }
+
+    public static double old_logistic_cdf(int x, int loc, int scale) {
+        return 1 / (1 + Math.exp((loc - x) / (double) scale));
+    }
+
+    public static double logistic_cdf(int x, int loc, int scale) {
+        return (old_logistic_cdf(x, loc, scale) - old_logistic_cdf(0, loc, scale)) / (1 - old_logistic_cdf(0, loc, scale));
     }
 }

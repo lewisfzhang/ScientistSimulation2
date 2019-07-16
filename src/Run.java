@@ -3,9 +3,15 @@ public class Run {
         Config config = new Config();
         Model model = new Model(config);
         Collect collect = new Collect(model);
-        for (int t = 0; t < config.time_periods; t++) {
+
+        for (int i = 0; i < config.time_periods; i++) {
+            Time t = new Time("\nmodel step");
             model.step();
+            t.stop_time();
         }
+
+        Time t = new Time("\ncollecting");
         collect.collect_data();
+        t.stop_time();
     }
 }
