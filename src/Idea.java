@@ -14,6 +14,6 @@ public class Idea {
     	this.idea_max = 0; // NEED: poisson with max from model
     	this.idea_sds = 0; // NEED: poisson with sds from model
     	this.idea_k = 0; // NEED: poisson with k mean from model
-    	create_idea_collectors(model.time_period);
+    	// create_idea_collectors(model.time_periods);
     }
 }
