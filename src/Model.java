@@ -99,11 +99,30 @@ public class Model {
     }
     
     public void update_objects() {
-    	
+    	for(int idx = 0; idx < idea_list.size(); idx++) {
+    		Idea idea = idea_list.get(idx);
+    		int effort_invested_tp = 0;
+    		int k_paid_tp = 0;
+    		for(int s = 0; s < scientist_list.size(); s++) {
+    			Scientist sci = scientist_list.get(s);
+    			effort_invested_tp += sci.idea_eff_tp.get(idx);
+    			k_paid_tp += sci.ideas_k_paid_tp.get(idx);
+    		}
+    		idea.total_effort += effort_invested_tp;
+    		idea.effort_by_tp.add(effort_invested_tp);
+    		idea.num_k_by_tp.add(k_paid_tp);
+    	}
     }
     
     public void pay_out_returns() {
-    	
+    	for(int i = 0; i < idea_list.size(); i++) {
+    		Idea idea = idea_list.get(i);
+    		if(idea.effort_by_tp.get(tp) != 0) {
+    			int start_effort = idea.total_effort - idea.effort_by_tp.get(tp);
+    			int end_effort = idea.total_effort;
+    			double idea_returns = idea.get_returns(idea.idea_mean,idea.idea_sds,idea.idea_max,start_effort,end_effort);
+    		}
+    	}
     }
     
     // Generates a random number within a range of [0, max]
