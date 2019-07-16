@@ -2,6 +2,7 @@ import java.util.*;
 import java.lang.Object;
 import java.lang.Math;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class Model {
     
@@ -69,23 +70,32 @@ public class Model {
     public int birth_new_ideas() {
     	for(int i = 0; i < ideas_per_time; i++) {
     		Idea idea = new Idea();
-    		idea.idea_mean = getRandomNumber(idea_mean);
-    		idea.idea_max = getRandomNumber(idea_max);
-    		idea.idea_k = getRandomNumber(k_mean);
-    		idea.total_effort = 0;
-    		idea.num_k = 0;n
+    		// need to make sure the new scientist objects initialize correctly in scientist class
     		idea_list.add(idea);
-    		return ideas_last_tp;
     	}
+    	int idx = 0;
+    	if(tp == 0) {
+    		idx = 0;
+    	}
+    	else {
+    		idx = idea_list.size() - ideas_per_time;
+    	}
+    	return idx;
     }
     
     public void set_perceived_rewards(int ideas_last_tp) {
-    	for(int i = 0; i < scientist_list.size() + 1; i++) {
-    		Scientist scientist = scientist_list.get(i);
-    		for(int j = 0; j < idea_list.size() + 1; j++) {
-    			
+    	ArrayList<Idea> new_idea_list = new ArrayList<Idea>();
+    	for(int s = 0; s < scientist_list.size(); s++) {
+    		Scientist sci = scientist_list.get(s);
+    		if(sci.age == 0) {
+    			 new_idea_list = idea_list;
+    		}
+    		else {
+    			new_idea_list = (ArrayList<Idea>) idea_list.subList(ideas_last_tp, idea_list.size());
     		}
     	}
+    	
+    	// NEED: help implementing the iteration through new idea lists
     }
     
     public void update_objects() {
