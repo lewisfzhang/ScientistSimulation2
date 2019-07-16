@@ -8,13 +8,14 @@ public class Scientist {
     // learning speed is CONSTANT for all ideas for a scientist --> 'lam' centered around 1
     public double learning_speed;
 
-    public double idea_max_mult;
-    public double idea_sds_mult;
-    public double idea_mean_mult;
+    // Logic: some scientists will be more optimistic than others
+    public double idea_max_mult; // SCALAR: multiplier determining max perceived returns
+    public double idea_sds_mult; // SCALAR: multiplier determining sds of perceived returns
+    public double idea_mean_mult; // SCALAR: multiplier determining perceived lambda
 
-    public int start_effort;
-    public int avail_effort;
-    public HashMap<String, ArrayList<Double>> perceived_rewards;
+    public int start_effort; // SCALAR: determines starting effort for a scientist in all periods
+    public int avail_effort; // SCALAR: counter that determines how much effort a scientist has left to allocate within TP
+    public HashMap<String, ArrayList<Double>> perceived_rewards; // tracks perceived rewards
 
     // data collection: creates lists to track investment within and across time periods
     public ArrayList<Integer> idea_eff_tp = new ArrayList<>(); // tracks the effort to be invested across different ideas within time period
@@ -29,10 +30,20 @@ public class Scientist {
 
     public Scientist(Model model) {
         this.model = model;
+
         this.learning_speed = Functions.poisson(10 * model.learning_rate_mean) / 10.0;
+        this.idea_max_mult = Functions.get_random_double(0.5, 1.5, model.config);
+        this.idea_sds_mult = Functions.get_random_double(0.5, 1.5, model.config);
+        this.idea_mean_mult = Functions.get_random_double(0.5, 1.5, model.config);
 
-        this.idea_max_mult = Functions.get_random_double(0.5, 1.5, model.config)
+        this.start_effort = Functions.poisson(model.start_effort_mean);
+        this.avail_effort = this.start_effort;
 
+        this.perceived_rewards = new HashMap<>();
+        this.perceived_rewards.put("Idea Mean", new ArrayList<>());
+        this.perceived_rewards.put("Idea SDS", new ArrayList<>());
+        this.perceived_rewards.put("Idea Max", new ArrayList<>());
+        this.perceived_rewards.put("Idea K", new ArrayList<>());
     }
 
     public void step() {
