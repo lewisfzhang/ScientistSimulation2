@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collections;
 
 public class Scientist {
     public Model model;
@@ -16,6 +18,9 @@ public class Scientist {
     public int start_effort; // SCALAR: determines starting effort for a scientist in all periods
     public int avail_effort; // SCALAR: counter that determines how much effort a scientist has left to allocate within TP
     public HashMap<String, ArrayList<Double>> perceived_rewards; // tracks perceived rewards
+
+    // used in optimization
+    public ArrayList<Integer> marg_eff;
 
     // data collection: creates lists to track investment within and across time periods
     public ArrayList<Integer> idea_eff_tp = new ArrayList<>(); // tracks the effort to be invested across different ideas within time period
@@ -40,7 +45,7 @@ public class Scientist {
         this.avail_effort = this.start_effort;
 
         this.perceived_rewards = new HashMap<>();
-        this.perceived_rewards.put("Idea Mean", new ArrayList<>());
+        this.perceived_rewards.put("Idea Mean", new ArrayList<>()); // all of the arraylists are Double type
         this.perceived_rewards.put("Idea SDS", new ArrayList<>());
         this.perceived_rewards.put("Idea Max", new ArrayList<>());
         this.perceived_rewards.put("Idea K", new ArrayList<>());

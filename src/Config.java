@@ -27,7 +27,7 @@ class Config {
     public void set_seed() {
         Random r = new Random();
         r.setSeed(seed);
-        this.seed_array = new int[10000000];
+        this.seed_array = new int[10000000]; // initialize 10000000 random seeds
         for (int i = 0; i < this.seed_array.length; i++) {
             this.seed_array[i] = r.nextInt();
         }
