@@ -66,7 +66,6 @@ public class Model {
     public void birth_new_scientists() {
     	for(int s = 0; s < num_sci; s++) {
     		Scientist sci = new Scientist(this);
-    		// need to make sure the new scientist objects initialize correctly in scientist class
     		scientist_list.add(sci);
     	}
     }
@@ -74,7 +73,6 @@ public class Model {
     public int birth_new_ideas() {
     	for(int i = 0; i < ideas_per_time; i++) {
     		Idea idea = new Idea(this);
-    		// need to make sure the new scientist objects initialize correctly in scientist class
     		idea_list.add(idea);
     	}
     	int idx = 0;
@@ -97,9 +95,35 @@ public class Model {
     		else {
     			new_idea_list = (ArrayList<Idea>) idea_list.subList(ideas_last_tp, idea_list.size());
     		}
+    		for(int i = 0; i < idea_list.size(); i++) {
+    			Idea idea = idea_list.get(i);
+    			append_scientist_lists(sci);
+        		double sci_mult_max = Functions.get_normal_number(sci.idea_max_mult, 0.1, config);
+        	    double sci_mult_mean = Functions.get_normal_number(sci.idea_sds_mult, 0.1, config);
+                double sci_mult_sds = Functions.get_normal_number(sci.idea_mean_mult, 0.1, config);
+        	    double idea_mean = sci_mult_mean * idea.idea_mean;
+                double idea_sds = sci_mult_sds * idea.idea_sds;
+        	    double idea_max = sci_mult_max * idea.idea_max;
+                double idea_k = Math.round(sci.learning_speed * idea.idea_k);
+       	        ArrayList<Double> idea_means_pointer = sci.perceived_rewards.get("Idea Mean");
+       	        idea_means_pointer.add(idea_mean);
+       	        ArrayList<Double> idea_sds_pointer = sci.perceived_rewards.get("Idea SDS");
+    	        idea_sds_pointer.add(idea_sds);
+    	        ArrayList<Double> idea_max_pointer = sci.perceived_rewards.get("Idea Max");
+       	        idea_max_pointer.add(idea_max);
+       	        ArrayList<Double> idea_k_pointer = sci.perceived_rewards.get("Idea K");
+    	        idea_k_pointer.add(idea_k);
+        	}
     	}
-    	
-    	// NEED: help implementing the iteration through new idea lists
+    }
+    
+    public void append_scientist_lists(Scientist sci) {
+    	sci.idea_eff_tp.add(0);
+        sci.idea_eff_tot.add(0);
+        sci.ideas_k_paid_tp.add(0);
+        sci.ideas_k_paid_tot.add(0);
+        sci.returns_tp.add(0.0);
+        sci.returns_tot.add(0.0);
     }
     
     public void update_objects() {
@@ -158,15 +182,15 @@ public class Model {
     			Scientist sci = scientist_list.get(sci_id);
     			double individual_proportion = sci.idea_eff_tp.get(iidx) / total_effort_invested;
     			double individual_returns = individual_proportion * total_effort_invested;
-    			arr_increment_double(sci.returns_tp, iidx, individual_returns);
-    			arr_increment_double(sci.returns_tot, iidx, individual_returns);
+    			Functions.arr_increment_double(sci.returns_tp, iidx, individual_returns);
+    			Functions.arr_increment_double(sci.returns_tot, iidx, individual_returns);
     		}
     	}
     	else {
     		int oldest_scientist_id = list_of_investors.get(0);
     		Scientist sci = scientist_list.get(oldest_scientist_id);
-    		arr_increment_double(sci.returns_tp, iidx, idea_returns);
-			arr_increment_double(sci.returns_tot, iidx, idea_returns);
+    		Functions.arr_increment_double(sci.returns_tp, iidx, idea_returns);
+			Functions.arr_increment_double(sci.returns_tot, iidx, idea_returns);
     	}
     }
 }
