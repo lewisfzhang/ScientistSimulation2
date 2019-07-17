@@ -23,9 +23,9 @@ public class Scientist {
     // k_paid: 0 = haven't learned, 1 = already paid learning cost
     public ArrayList<Integer> ideas_k_paid_tp = new ArrayList<>(); // records which ideas the scientist paid investment cost for this period
     public ArrayList<Integer> ideas_k_paid_tot = new ArrayList<>(); // records which ideas the scientist has paid the investment cost for overall
-    public ArrayList<Integer> returns_tp = new ArrayList<>(); // tracks the returns by idea within time period for the scientist
-    public ArrayList<Integer> returns_tot = new ArrayList<>(); // records the sum of returns the scientist has accrued for each idea
-    public ArrayList<Integer> overall_returns_tp = new ArrayList<>(); // tracks returns by tp
+    public ArrayList<Double> returns_tp = new ArrayList<>(); // tracks the returns by idea within time period for the scientist
+    public ArrayList<Double> returns_tot = new ArrayList<>(); // records the sum of returns the scientist has accrued for each idea
+    public ArrayList<Double> overall_returns_tp = new ArrayList<>(); // tracks returns by tp
 
 
     public Scientist(Model model) {
@@ -63,7 +63,7 @@ public class Scientist {
     public void reset_trackers() {
         this.idea_eff_tp = new ArrayList<Integer>(Collections.nCopies(this.idea_eff_tp.size(), 0));
         this.ideas_k_paid_tp = new ArrayList<Integer>(Collections.nCopies(this.ideas_k_paid_tp.size(), 0));
-        this.returns_tp = new ArrayList<Integer>(Collections.nCopies(this.returns_tp.size(), 0));
+        this.returns_tp = new ArrayList<Double>(Collections.nCopies(this.returns_tp.size(), 0.0));
     }
 
     public void update_trackers(HashMap<String, ArrayList<Integer>> inv_dict) {
