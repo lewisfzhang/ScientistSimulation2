@@ -65,7 +65,7 @@ public class Model {
     
     public void birth_new_scientists() {
     	for(int s = 0; s < num_sci; s++) {
-    		Scientist sci = new Scientist();
+    		Scientist sci = new Scientist(this);
     		// need to make sure the new scientist objects initialize correctly in scientist class
     		scientist_list.add(sci);
     	}
@@ -73,7 +73,7 @@ public class Model {
     
     public int birth_new_ideas() {
     	for(int i = 0; i < ideas_per_time; i++) {
-    		Idea idea = new Idea();
+    		Idea idea = new Idea(this);
     		// need to make sure the new scientist objects initialize correctly in scientist class
     		idea_list.add(idea);
     	}

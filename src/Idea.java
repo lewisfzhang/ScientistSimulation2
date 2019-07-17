@@ -3,7 +3,8 @@ import java.util.Collections;
 
 public class Idea {
     // instrinsic variables
-    public int idea_mean; // aka inflection point
+    public Model model;
+	public int idea_mean; // aka inflection point
     public int idea_max; // multiple, curve goes from 0 - M
     public int idea_sds; 
     public int idea_k; // entry cost/barrier to enter an idea
@@ -14,14 +15,15 @@ public class Idea {
     public ArrayList<Integer> num_k_by_tp; // number people who paid investment cost by period
 
     public Idea(Model model) {
-    	this.idea_mean = Functions.poisson(model.idea_mean);
-    	this.idea_max = Functions.poisson(model.idea_max);
-    	this.idea_sds = Functions.poisson(model.idea_sds);
-    	this.idea_k = Functions.poisson(model.k_mean);
+    	this.model = model;
+    	idea_mean = Functions.poisson(model.idea_mean);
+    	idea_max = Functions.poisson(model.idea_max);
+    	idea_sds = Functions.poisson(model.idea_sds);
+    	idea_k = Functions.poisson(model.k_mean);
 
-        this.total_effort = 0;
-        this.effort_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
-        this.num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
+        total_effort = 0;
+        effort_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
+        num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
     }
 
     public static double get_returns(int means, int sds, int max, int start_idx, int end_idx) {
