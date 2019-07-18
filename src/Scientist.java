@@ -31,7 +31,7 @@ public class Scientist {
     public ArrayList<Integer> ideas_k_paid_tp = new ArrayList<>(); // records which ideas the scientist paid investment cost for this period
     public ArrayList<Integer> ideas_k_paid_tot = new ArrayList<>(); // records which ideas the scientist has paid the investment cost for overall
 
-    public ArrayList<Integer> discov_ideas = new ArrayList<>();
+    public ArrayList<Integer> discov_ideas = new ArrayList<>(); // 1 = discovered, 0 = not discovered
     public int discov_rate;
 
     public ArrayList<Double> returns_tp = new ArrayList<>(); // tracks the returns by idea within time period for the scientist

@@ -120,8 +120,11 @@ public class Model {
     		// determine which ideas a scientist will discover
 			int count = 0;
     		while (count < sci.discov_rate) {
-
-    			int new_idea_idx = Functions.get_random_int(0, idea_list.s)
+    			int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
+    			if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
+					sci.discov_ideas.set(new_idea_idx, 1);
+					count++;
+				}
 			}
     	}
     }
