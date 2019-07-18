@@ -4,6 +4,7 @@ import java.util.Collections;
 
 public class Scientist {
     public Model model;
+    public int id;
     public int age = 0; // SCALAR: age of the given scientists, initiated at 0 years when entered into model
 
     // SCALAR: multiplier determining scientist specific K (idea K * learning speed = specific k)
@@ -25,9 +26,14 @@ public class Scientist {
     // data collection: creates lists to track investment within and across time periods
     public ArrayList<Integer> idea_eff_tp = new ArrayList<>(); // tracks the effort to be invested across different ideas within time period
     public ArrayList<Integer> idea_eff_tot = new ArrayList<>(); // tracks the total effort invested in each idea by the scientist
+
     // k_paid: 0 = haven't learned, 1 = already paid learning cost
     public ArrayList<Integer> ideas_k_paid_tp = new ArrayList<>(); // records which ideas the scientist paid investment cost for this period
     public ArrayList<Integer> ideas_k_paid_tot = new ArrayList<>(); // records which ideas the scientist has paid the investment cost for overall
+
+    public ArrayList<Integer> discov_ideas = new ArrayList<>();
+    public int discov_rate;
+
     public ArrayList<Double> returns_tp = new ArrayList<>(); // tracks the returns by idea within time period for the scientist
     public ArrayList<Double> returns_tot = new ArrayList<>(); // records the sum of returns the scientist has accrued for each idea
     public ArrayList<Double> overall_returns_tp = new ArrayList<>(); // tracks returns by tp
@@ -35,8 +41,11 @@ public class Scientist {
 
     public Scientist(Model model) {
         this.model = model;
+        this.id = model.scientist_list.size(); // Scientist object is created before appending to list --> get current list size before append as idx
 
         this.learning_speed = Functions.poisson(10 * model.learning_rate_mean) / 10.0;
+        this.discov_rate = (int) (this.learning_speed * model.discov_rate_mean);
+
         this.idea_max_mult = Functions.get_random_double(0.5, 1.5, model.config);
         this.idea_sds_mult = Functions.get_random_double(0.5, 1.5, model.config);
         this.idea_mean_mult = Functions.get_random_double(0.5, 1.5, model.config);

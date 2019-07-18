@@ -3,13 +3,17 @@ import java.lang.Object;
 import java.lang.Math;
 
 public class Collect {
+	public Model model;
 
-	Model model;
 	public Collect(Model model) {
 		this.model = model;
 	}
 
 	public void collect_data() {
+
+		// SAVE EVERYTHING AS CSV, create helper functions
+
+
 		ArrayList<Scientist> sci_list = model.scientist_list;
 		ArrayList<Idea> id_list = model.idea_list;
 		double sci_plus_one = sci_list.size() + 1;

@@ -16,6 +16,7 @@ public class Model {
 	public int idea_sds;
 	public int start_effort_mean;
 	public int learning_rate_mean;
+	public int discov_rate_mean;
 	public int tp = 0;
 
 	// ARRAYS: creates empty arraylists to track scientists and ideas; index indicates age
@@ -35,6 +36,7 @@ public class Model {
 		start_effort_mean = config.start_effort_mean;
 		k_mean = config.k_mean;
 		learning_rate_mean = config.learning_rate_mean;
+		discov_rate_mean = config.discov_rate_mean;
     }
 	
 	// defines the process for one time period within the model
@@ -43,7 +45,7 @@ public class Model {
     	birth_new_scientists();
 
 		int ideas_last_tp = birth_new_ideas(); // keep track of how many old ideas so we only have to update new ideas
-    	set_perceived_rewards(ideas_last_tp);
+		update_scientist_idea(ideas_last_tp);
 
     	for(int s = 0; s < scientist_list.size(); s++) {
     		Scientist sci = scientist_list.get(s);
@@ -85,15 +87,16 @@ public class Model {
 
     // loop through every scientist, appending their perceived rewards dataframe with new ideas
 	// also updates related list with extra spots for new ideas --> append_scientist_lists
-	public void set_perceived_rewards(int ideas_last_tp) {
+	public void update_scientist_idea(int ideas_last_tp) {
     	for (Scientist sci : scientist_list) {
 			// determining how many loops we need to run (for performance efficiency)
 			// just born scientists need to update for all ideas --> sci.age = 0
 			// older scientists only need to update for new ideas
-    		ArrayList<Idea> new_idea_list = (sci.age == 0) ? idea_list : new ArrayList<Idea>(idea_list.subList(ideas_last_tp, idea_list.size()));
+    		int idea_list_start_idx = (sci.age == 0)  ? 0 : ideas_last_tp;
 
     		// slice to iterate only through new ideas, setting up attributes and scientist perception
-    		for (Idea idea : new_idea_list) {
+    		for (int i=idea_list_start_idx; i<idea_list.size(); i++) {
+    			Idea idea = idea_list.get(i);
     			append_scientist_lists(sci); // add element to signal new idea for data collector variables
 
 				// keeping all normal distributions for sci_mult to 0.3 range --> *** 0.1 sds ***
@@ -113,6 +116,13 @@ public class Model {
 				sci.perceived_rewards.get("Idea Max").add(idea_max);
 				sci.perceived_rewards.get("Idea K").add(idea_k);
         	}
+
+    		// determine which ideas a scientist will discover
+			int count = 0;
+    		while (count < sci.discov_rate) {
+
+    			int new_idea_idx = Functions.get_random_int(0, idea_list.s)
+			}
     	}
     }
 
@@ -124,7 +134,8 @@ public class Model {
         sci.idea_eff_tot.add(0);
         sci.ideas_k_paid_tp.add(0);
         sci.ideas_k_paid_tot.add(0);
-        sci.returns_tp.add(0.0);
+		sci.discov_ideas.add(0);
+		sci.returns_tp.add(0.0);
         sci.returns_tot.add(0.0);
     }
 

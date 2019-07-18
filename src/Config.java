@@ -10,13 +10,16 @@ class Config {
     public int sci_rate = 10;
     public int tp_alive = 8;
 
-    // maybe make some of these proportions relative to the idea mean ?
+    // related to idea
     public int idea_mean = 300;
-    public int idea_sds = 75;
+    public int idea_sds = (int) (0.25 * idea_mean); // 75
     public int idea_max = 100;
-    public int start_effort_mean = 150;
-    public int k_mean = 37;
+    public int k_mean = (int) ((1.0/8) * idea_mean); // 37
+
+    // related to scientist
+    public int start_effort_mean = (int) (0.5 * idea_mean); // 150
     public int learning_rate_mean = 1;
+    public int discov_rate_mean = (int) (0.5 * ideas_per_time); // 5
 
     public boolean equal_returns = true;
 

@@ -4,6 +4,7 @@ import java.util.Collections;
 public class Idea {
     // instrinsic variables
     public Model model;
+    public int id;
 
     // research impact variables
 	public int idea_mean; // aka inflection point
@@ -22,6 +23,7 @@ public class Idea {
 
     public Idea(Model model) {
     	this.model = model;
+    	this.id = model.idea_list.size(); // Idea object is created before appending to list --> get current list size before append as idx
 
     	idea_mean = Functions.poisson(model.idea_mean);
     	idea_max = Functions.poisson(model.idea_max);
