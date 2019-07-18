@@ -23,6 +23,8 @@ class Config {
 
     public boolean equal_returns = true;
 
+    public static int max_weight = 3;
+
     public Config() {
         set_seed();
     }
