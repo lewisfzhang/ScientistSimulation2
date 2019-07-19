@@ -46,4 +46,11 @@ public class Functions {
         double curr_val = arr.get(idx);
         arr.set(idx, curr_val + value);
     }
+
+    // sets all elements from idx to end to 0
+    static void set_remain_zero(ArrayList<Integer> arr, int idx) {
+        for (int i=idx; i<arr.size(); i++) {
+            arr.set(i, 0);
+        }
+    }
 }
