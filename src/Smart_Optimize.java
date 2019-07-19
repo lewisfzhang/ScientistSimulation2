@@ -24,6 +24,8 @@ public class Smart_Optimize {
 		}
 
 		final_effort_alloc = Economics.get_effort_alloc(max_branch);
+
+		// return inv_dict; should return inv_dict!
 	}
 }
 

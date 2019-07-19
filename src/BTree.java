@@ -58,7 +58,7 @@ public class BTree {
             if (n != null) {
                 branch.add(n.idea_idx);
             } else {
-                next_path(i);
+                next_path(i); // i represents index of leaf in path_counter arraylist (last non-null Node)
                 i = path_counter.size(); // break out of for loop
             }
         }
@@ -68,32 +68,40 @@ public class BTree {
     // "...01111" --> "...10000" as next path
     void next_path(int last_index) {
         Node n = get_Node(path_counter);
-        n = n.parent;
-        while (!(n.left == null && n.right == null)) // while not, so while there is a path
-        int reset_idx = last_index;
-        int last_val = path_counter.get(reset_idx);
-
-        // keep on iterating back to first zero
-        while (reset_idx > 0 && last_val == 1) { // NOTE: if reset_idx = 0 and last_val = 1 then something is wrong --> no more paths! "1111"
-
-            reset_idx--;
+        int idx = last_index;
+        while (n.right == null) { // find divergence node, assuming root.right != null
+            n = n.parent;
+            idx--;
         }
 
+        n = n.right; // since we came up to divergence node from left, now we proceed right
+        idx++;
+        path_counter.set(idx, 1);
+
+        while (n.left != null) { // once divergence found, loop through default 0 --> first path we should take since divergence node
+            n = n.left;
+            idx++;
+            path_counter.set(idx, 0);
+        }
     }
 
     Node get_Node(ArrayList<Integer> path) {
         Node n = root;
+        Node temp;
         for (int i : path) {
             if (i == 0) {
-                n = n.left;
+                temp = n.left;
             } else { // i==1
-                n = n.right;
+                temp = n.right;
             }
 
-            if (n == null) { // path is dead, go back to parent
-                return n.parent;
+            if (temp == null) { // path is dead, go back to parent
+                break;
+            } else {
+                n = temp;
             }
         }
+        return n;
     }
 }
 

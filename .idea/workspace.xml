@@ -4,7 +4,7 @@
     <list default="true" id="8843f85a-9102-4f97-b334-97467f639d90" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/BTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Functions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Functions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Smart_Optimize.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Smart_Optimize.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,11 +18,11 @@
       <content type="file-editors">
         <state>
           <leaf>
-            <file pinned="false" current-in-tab="true">
+            <file pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/src/Scientist.java">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="590">
-                    <caret line="77" column="27" lean-forward="true" selection-start-line="77" selection-start-column="27" selection-end-line="77" selection-end-column="99" />
+                  <state relative-caret-position="350">
+                    <caret line="61" selection-start-line="61" selection-end-line="61" />
                     <folding>
                       <element signature="imports" expanded="true" />
                     </folding>
@@ -42,6 +42,15 @@
                 </provider>
               </entry>
             </file>
+            <file pinned="false" current-in-tab="true">
+              <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/jshell/jshell_console_1.snippet">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="105">
+                    <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+                  </state>
+                </provider>
+              </entry>
+            </file>
           </leaf>
         </state>
       </content>
@@ -55,7 +64,7 @@
             <entry file="file://$PROJECT_DIR$/src/Model.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="406">
-                  <caret line="125" column="28" lean-forward="true" selection-start-line="125" selection-start-column="28" selection-end-line="125" selection-end-column="28" />
+                  <caret line="125" column="28" selection-start-line="125" selection-start-column="28" selection-end-line="125" selection-end-column="28" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="e#6490#6499#0" expanded="true" />
@@ -67,8 +76,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/BTree.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="278">
-                  <caret line="71" column="91" selection-start-line="71" selection-start-column="91" selection-end-line="71" selection-end-column="91" />
+                <state relative-caret-position="1500">
+                  <caret line="100" column="25" selection-start-line="100" selection-start-column="25" selection-end-line="100" selection-end-column="25" />
                   <folding>
                     <element signature="imports" expanded="true" />
                   </folding>
@@ -114,7 +123,7 @@
             <entry file="file://$PROJECT_DIR$/src/Collect.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="450">
-                  <caret line="30" column="37" lean-forward="true" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
+                  <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="e#136#137#0" expanded="true" />
@@ -135,22 +144,10 @@
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/jshell/jshell_console_1.snippet">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="255">
-                  <caret line="17" column="6" selection-start-line="17" selection-start-column="6" selection-end-line="17" selection-end-column="6" />
-                  <folding>
-                    <element signature="e#0#186#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/Idea.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="351">
-                  <caret line="25" column="55" lean-forward="true" selection-start-line="25" selection-start-column="55" selection-end-line="25" selection-end-column="55" />
+                  <caret line="25" column="55" selection-start-line="25" selection-start-column="55" selection-end-line="25" selection-end-column="55" />
                   <folding>
                     <element signature="imports" expanded="true" />
                   </folding>
@@ -174,20 +171,20 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/Smart_Optimize.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="420">
-                  <caret line="28" lean-forward="true" selection-start-line="28" selection-end-line="28" />
+                <state relative-caret-position="405">
+                  <caret line="27" column="51" selection-start-line="27" selection-start-column="51" selection-end-line="27" selection-end-column="51" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/Functions.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="530">
-                  <caret line="53" column="9" lean-forward="true" selection-start-line="53" selection-start-column="9" selection-end-line="53" selection-end-column="9" />
+                <state relative-caret-position="462">
+                  <caret line="53" column="9" selection-start-line="53" selection-start-column="9" selection-end-line="53" selection-end-column="9" />
                   <folding>
                     <element signature="imports" expanded="true" />
                   </folding>
@@ -224,24 +221,24 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/jshell/jshell_console_1.snippet" />
         <option value="$PROJECT_DIR$/src/Optimize.java" />
         <option value="$PROJECT_DIR$/src/Time.java" />
         <option value="$PROJECT_DIR$/src/Run.java" />
         <option value="$PROJECT_DIR$/src/Collect.java" />
         <option value="$PROJECT_DIR$/src/Idea.java" />
         <option value="$PROJECT_DIR$/src/Scientist.java" />
-        <option value="$PROJECT_DIR$/src/Smart_Optimize.java" />
         <option value="$PROJECT_DIR$/src/Model.java" />
         <option value="$PROJECT_DIR$/src/Config.java" />
         <option value="$PROJECT_DIR$/src/Functions.java" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/jshell/jshell_console_1.snippet" />
         <option value="$PROJECT_DIR$/src/BTree.java" />
+        <option value="$PROJECT_DIR$/src/Smart_Optimize.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="581" />
-    <option name="y" value="-1106" />
+    <option name="x" value="1920" />
+    <option name="y" value="23" />
     <option name="width" value="1920" />
     <option name="height" value="1057" />
   </component>
@@ -286,7 +283,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1563495021752" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1563503423584" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
@@ -330,7 +327,7 @@
       <option name="presentableId" value="Default" />
       <updated>1562870075574</updated>
       <workItem from="1562870078935" duration="6942000" />
-      <workItem from="1563312627772" duration="35338000" />
+      <workItem from="1563312627772" duration="38565000" />
     </task>
     <task id="LOCAL-00001" summary="fresh commit">
       <created>1562874118969</created>
@@ -395,11 +392,18 @@
       <option name="project" value="LOCAL" />
       <updated>1563492107966</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="refresh">
+      <created>1563495030007</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1563495030007</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42280000" />
+    <option name="totallyTimeSpent" value="45507000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -411,10 +415,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="581" y="-1106" width="1920" height="1057" extended-state="6" />
+    <frame x="1920" y="23" width="1920" height="1057" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18317358" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.18317358" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -423,8 +427,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Messages" weight="0.32953367" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32953367" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946752" weight="0.32953367" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32953367" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946752" visible="true" weight="0.32953367" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -470,7 +474,7 @@
     <entry file="file://$PROJECT_DIR$/src/Collect.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
-          <caret line="30" column="37" lean-forward="true" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
+          <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#136#137#0" expanded="true" />
@@ -492,27 +496,19 @@
     <entry file="file://$PROJECT_DIR$/src/Idea.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="351">
-          <caret line="25" column="55" lean-forward="true" selection-start-line="25" selection-start-column="55" selection-end-line="25" selection-end-column="55" />
+          <caret line="25" column="55" selection-start-line="25" selection-start-column="55" selection-end-line="25" selection-end-column="55" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Smart_Optimize.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" lean-forward="true" selection-start-line="28" selection-end-line="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Model.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="406">
-          <caret line="125" column="28" lean-forward="true" selection-start-line="125" selection-start-column="28" selection-end-line="125" selection-end-column="28" />
+        <state relative-caret-position="174">
+          <caret line="121" column="8" selection-start-line="121" selection-start-column="8" selection-end-line="121" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6490#6499#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -528,20 +524,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Scientist.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="47" selection-start-line="47" selection-end-line="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Functions.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="530">
-          <caret line="53" column="9" lean-forward="true" selection-start-line="53" selection-start-column="9" selection-end-line="53" selection-end-column="9" />
+        <state relative-caret-position="462">
+          <caret line="53" column="9" selection-start-line="53" selection-start-column="9" selection-end-line="53" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -558,16 +544,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/jshell/jshell_console_1.snippet">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="6" selection-start-line="17" selection-start-column="6" selection-end-line="17" selection-end-column="6" />
-          <folding>
-            <element signature="e#0#186#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Time.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -575,13 +551,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BTree.java">
+    <entry file="file://$PROJECT_DIR$/src/Scientist.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="71" column="91" selection-start-line="71" selection-start-column="91" selection-end-line="71" selection-end-column="91" />
+        <state relative-caret-position="306">
+          <caret line="47" selection-start-line="47" selection-end-line="47" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/BTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1500">
+          <caret line="100" column="25" selection-start-line="100" selection-start-column="25" selection-end-line="100" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/jshell/jshell_console_1.snippet">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Smart_Optimize.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="27" column="51" selection-start-line="27" selection-start-column="51" selection-end-line="27" selection-end-column="51" />
         </state>
       </provider>
     </entry>
