@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -7,7 +8,7 @@ import java.util.Collections;
 // helper class with functions for Optimize class
 class Opt_Func {
     // multiple two arraylists of same length
-    public static ArrayList<Integer> np_mult(ArrayList<Integer> arr1, ArrayList<Integer> arr2) {
+    static ArrayList<Integer> np_mult(ArrayList<Integer> arr1, ArrayList<Integer> arr2) {
         Integer[] arr3 = new Integer[arr1.size()];
         for (int i = 0; i<arr3.length; i++) {
             arr3[i] = arr1.get(i) * arr2.get(i);
@@ -15,7 +16,7 @@ class Opt_Func {
         return new ArrayList<>(Arrays.asList(arr3));
     }
 
-    public static ArrayList<Integer> int_minus_np(int num, ArrayList<Integer> arr) {
+    static ArrayList<Integer> int_minus_np(int num, ArrayList<Integer> arr) {
         Integer[] out = new Integer[arr.size()];
         for (int i = 0; i<out.length; i++) {
             out[i] = num - arr.get(i);
@@ -25,7 +26,7 @@ class Opt_Func {
 
     // +1 ensures that each idea a scientist works on will have at least 1 unit of marg effort
     // max(curr_k[np.where(curr_k <= sci.avail_effort - 1)]) + 1
-    public static LinkedList<Integer> np_where_lesseq(ArrayList<Integer> arr, int target) {
+    static LinkedList<Integer> np_where_lesseq(ArrayList<Integer> arr, int target) {
         LinkedList<Integer> out = new LinkedList<>();
         for (int i=0; i<arr.size(); i++) {
             if (arr.get(i) <= target) {
@@ -35,17 +36,25 @@ class Opt_Func {
         return out;
     }
 
-    public static ArrayList<Integer> arr_double_to_int(ArrayList<Double> arr) {
+    static ArrayList<Integer> arr_double_to_int(ArrayList<Double> arr) {
         ArrayList<Integer> out = new ArrayList<>();
         for (Double d : arr) {
             out.add((int) Math.round(d));
         }
         return out;
     }
+
+    static void set_zero(ArrayList<Integer> arr, ArrayList<Integer> idx) { // arr and idx should have same length
+        for (int i=0; i<idx.size(); i++) {
+            if (idx.get(i) == 0) { // idea hasn't been discovered
+                arr.set(i, 0);
+            }
+        }
+    }
 }
 
 public class Optimize {
-    public static HashMap<String, ArrayList<Integer>> investing_helper(Scientist sci) {
+    static HashMap<String, ArrayList<Integer>> investing_helper(Scientist sci) {
         // df that keeps track of scientist's transactions within current time period
         // for k_paid: 0 if already paid, # 1 if paid this period
         HashMap<String, ArrayList<Integer>> inv_dict = new HashMap<>();
@@ -55,6 +64,9 @@ public class Optimize {
 
         // ARRAY: extra cost for each idea, which is a column in the scientist.perceived_returns df
         ArrayList<Integer> k = Opt_Func.arr_double_to_int(sci.perceived_rewards.get("Idea K"));
+
+        // k for ideas that haven't been discovered will be zero, arraylist k is updated through void function
+        Opt_Func.set_zero(k, sci.discov_ideas);
 
         // ARRAY: same logic as idea_k_paid_tot where 0 = haven't learned, 1 = learned, copy over old ArrayList
         ArrayList<Integer> k_paid_present = new ArrayList<>(sci.ideas_k_paid_tot);
@@ -94,28 +106,30 @@ public class Optimize {
 
     }
 
-    public static int greedy_returns(Scientist sci) {
+    static int greedy_returns(Scientist sci) {
         ArrayList<Double> mean = sci.perceived_rewards.get("Idea Mean");
         ArrayList<Double> sds = sci.perceived_rewards.get("Idea SDS");
         ArrayList<Double> max = sci.perceived_rewards.get("Idea Max");
         double max_rtn = 0;
         int max_idx = 0;
 
-        for (int idx=0; idx<sci.model.idea_list.size(); idx++) {
-            Idea i = sci.model.idea_list.get(idx);
-            int start_idx = i.total_effort;
-            int end_idx = start_idx + sci.marg_eff.get(idx);
-            double rtn = Idea.get_returns(mean.get(idx), sds.get(idx), max.get(idx), start_idx, end_idx);
-            if (rtn > max_rtn) {
-                max_rtn = rtn;
-                max_idx = idx;
+        for (int idx=0; idx<sci.discov_ideas.size(); idx++) {
+            if (sci.discov_ideas.get(idx) == 1) { // only iterate through discovered ideas
+                Idea i = sci.model.idea_list.get(idx);
+                int start_idx = i.total_effort;
+                int end_idx = start_idx + sci.marg_eff.get(idx);
+                double rtn = Idea.get_returns(mean.get(idx), sds.get(idx), max.get(idx), start_idx, end_idx);
+                if (rtn > max_rtn) {
+                    max_rtn = rtn;
+                    max_idx = idx;
+                }
             }
         }
         return max_idx;
     }
 
     // adds the current transaction to the list of transactions
-    public static HashMap<String, ArrayList<Integer>> update_df(HashMap<String, ArrayList<Integer>> inv_dict, int idea_idx, Scientist sci) {
+    static HashMap<String, ArrayList<Integer>> update_df(HashMap<String, ArrayList<Integer>> inv_dict, int idea_idx, Scientist sci) {
         // checks if idea_idx is already in the df
         int idx = inv_dict.get("idea_idx").indexOf(idea_idx);
 
