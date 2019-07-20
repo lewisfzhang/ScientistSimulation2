@@ -10,7 +10,7 @@ public class BTree {
     ArrayList<Integer> line = new ArrayList<>();
 
     BTree(ArrayList<Integer> k_paid, ArrayList<Integer> discov_ideas) { // k_paid = sci.k_paid_tot, both arraylists should have the same length
-        this.max_weight = Config.max_weight;
+        this.max_weight = Config.max_weight;  // shouldn't need to be used since we only have ~2 new ideas each period
         // only for ideas we haven't paid k for yet
         for (int i=0; i<discov_ideas.size(); i++) {
             if (discov_ideas.get(i) == 1) {
@@ -45,6 +45,7 @@ public class BTree {
     ArrayList<Integer> path_counter; // keeps track of which path we are currently on based on Node.k value --> 0's, 1's
     boolean first_path = true;
 
+    // should only return 4 possible branches (2 new ideas each period, max_weight shouldn't have to be used)
     // branch: returns a list of the indexes of the ideas based on model.idea_list (both already learned and new ideas that will be learned)
     ArrayList<Integer> next_branch() { // every node in the tree, whether or not k is paid in this tp 0 = no, 1 = yes
         if (first_path) {
