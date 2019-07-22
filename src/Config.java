@@ -19,7 +19,7 @@ class Config {
     // related to scientist
     public int start_effort_mean = (int) (0.5 * idea_mean); // 150
     public int learning_rate_mean = 1;
-    public int discov_rate_mean = (int) (0.5 * ideas_per_time); // 5
+    public int discov_rate = 2;
 
     public boolean equal_returns = true;
 

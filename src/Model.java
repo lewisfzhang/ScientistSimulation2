@@ -16,7 +16,7 @@ public class Model {
 	public int idea_sds;
 	public int start_effort_mean;
 	public int learning_rate_mean;
-	public int discov_rate_mean;
+	public int discov_rate;
 	public int tp = 0;
 
 	// ARRAYS: creates empty arraylists to track scientists and ideas; index indicates age
@@ -29,14 +29,14 @@ public class Model {
 		num_sci = config.sci_rate;
 		time_periods = config.time_periods;
 		ideas_per_time = config.ideas_per_time;
-		tp_alive = config.tp_alive;
 		idea_mean = config.idea_mean;
 		idea_max = config.idea_max;
 		idea_sds = config.idea_sds;
+		tp_alive = config.tp_alive;
 		start_effort_mean = config.start_effort_mean;
 		k_mean = config.k_mean;
 		learning_rate_mean = config.learning_rate_mean;
-		discov_rate_mean = config.discov_rate_mean;
+		discov_rate = config.discov_rate;
     }
 	
 	// defines the process for one time period within the model
@@ -92,10 +92,10 @@ public class Model {
 			// determining how many loops we need to run (for performance efficiency)
 			// just born scientists need to update for all ideas --> sci.age = 0
 			// older scientists only need to update for new ideas
-    		int idea_list_start_idx = (sci.age == 0)  ? 0 : ideas_last_tp;
+    		int idea_list_start_idx = (sci.age == 0) ? 0 : ideas_last_tp;
 
     		// slice to iterate only through new ideas, setting up attributes and scientist perception
-    		for (int i=idea_list_start_idx; i<idea_list.size(); i++) {
+    		for (int i = idea_list_start_idx; i < idea_list.size(); i++) {
     			Idea idea = idea_list.get(i);
     			append_scientist_lists(sci); // add element to signal new idea for data collector variables
 
@@ -116,16 +116,33 @@ public class Model {
 				sci.perceived_rewards.get("Idea Max").add(idea_max);
 				sci.perceived_rewards.get("Idea K").add(idea_k);
         	}
-
+    		
+    		// check the previous period to see which newly discovered ideas had their entry costs paid
+    		for(int i = 0; i < sci.ideas_k_paid_tot.size(); i++) {
+    			if(sci.discov_ideas.get(i) == 1 & sci.ideas_k_paid_tot.get(i) == 0)
+    				sci.discov_ideas.set(i, 0);
+    		}
+    		
     		// determine which ideas a scientist will discover
 			int count = 0;
-    		while (count < sci.discov_rate) {
-    			int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
-    			if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
-					sci.discov_ideas.set(new_idea_idx, 1);
-					count++;
-				}
+			if(sci.age == 0) {
+				while (count < 2 * sci.discov_rate) {
+        			int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
+        			if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
+    					sci.discov_ideas.set(new_idea_idx, 1);
+    					count++;
+    				}
+    			}
 			}
+			if(sci.age != 0) {
+    			while (count < sci.discov_rate) {
+        			int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
+        			if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
+    					sci.discov_ideas.set(new_idea_idx, 1);
+    					count++;
+    				}
+    			}
+    		}
     	}
     }
 
@@ -133,8 +150,8 @@ public class Model {
     // ignore static warning, only because we aren't using self keyword
 	// keep it in model since it is called by the model step function --> set_perceived_rewards()
 	public void append_scientist_lists(Scientist sci) {
-    	sci.idea_eff_tp.add(0);
-        sci.idea_eff_tot.add(0);
+    	sci.idea_eff_tp.add(0.0);
+        sci.idea_eff_tot.add(0.0);
         sci.ideas_k_paid_tp.add(0);
         sci.ideas_k_paid_tot.add(0);
 		sci.discov_ideas.add(0);
