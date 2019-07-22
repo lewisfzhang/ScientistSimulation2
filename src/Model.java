@@ -172,6 +172,7 @@ public class Model {
     		}
 
     		idea.total_effort += effort_invested_tp;
+    		idea.num_k_total += k_paid_tp;
     		idea.effort_by_tp.add(effort_invested_tp);
     		idea.num_k_by_tp.add(k_paid_tp);
     	}

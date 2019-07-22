@@ -18,6 +18,7 @@ public class Idea {
 
     // idea collectors
     public int total_effort; // total effort invested in idea to date, also accessed by optimization algorithms
+    public int num_k_total;
     public ArrayList<Integer> effort_by_tp; // total effort invested in idea by period
     public ArrayList<Integer> num_k_by_tp; // number people who paid investment cost by period
 
@@ -34,6 +35,7 @@ public class Idea {
         social_max = (int) (idea_max * Functions.get_random_double(0.5, 1.5, model.config)); // social impact range based on multiplier of 0.5-1.5 of research impact range
 
         total_effort = 0;
+        num_k_total = 0;
         effort_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
         num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
     }
