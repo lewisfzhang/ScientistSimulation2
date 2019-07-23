@@ -1,7 +1,8 @@
+import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
 
-public class Functions {
+class Functions {
     static double get_random_double(double min, double max, Config c) {
         Random r = new Random();
         r.setSeed(c.get_next_seed());
@@ -52,5 +53,21 @@ public class Functions {
         for (int i=idx; i<arr.size(); i++) {
             arr.set(i, 0);
         }
+    }
+
+    static void execCmd(String cmd) { // run shell commands
+        try {
+            Process proc = Runtime.getRuntime().exec(cmd);
+        } catch (IOException e) {
+            // exception handling
+        }
+    }
+
+    static ArrayList<Integer> arr_double_to_int(ArrayList<Double> arr) {
+        ArrayList<Integer> out = new ArrayList<Integer>();
+        for(Double d : arr){
+            out.add(d.intValue());
+        }
+        return out;
     }
 }

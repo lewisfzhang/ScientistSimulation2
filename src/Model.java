@@ -1,30 +1,30 @@
 import java.lang.Math;
 import java.util.ArrayList;
 
-public class Model {
+class Model {
 	// initiates the key parameters within the model, as set in config
-	public Config config;
+	Config config;
 
 	// SCALARS
-	public int num_sci;
-	public int time_periods;
-	public int ideas_per_time;
-	public int tp_alive;
-	public int k_mean;
-	public int idea_mean;
-	public int idea_max;
-	public int idea_sds;
-	public int start_effort_mean;
-	public int learning_rate_mean;
-	public int discov_rate;
-	public int tp = 0;
+	int num_sci;
+	int time_periods;
+	int ideas_per_time;
+	int tp_alive;
+	int k_mean;
+	int idea_mean;
+	int idea_max;
+	int idea_sds;
+	int start_effort_mean;
+	int learning_rate_mean;
+	int discov_rate;
+	int tp = 0;
 
 	// ARRAYS: creates empty arraylists to track scientists and ideas; index indicates age
-	public ArrayList<Scientist> scientist_list = new ArrayList<>();
-	public ArrayList<Idea> idea_list = new ArrayList<>();
+	ArrayList<Scientist> scientist_list = new ArrayList<>();
+	ArrayList<Idea> idea_list = new ArrayList<>();
 
 	// model constructor
-	public Model(Config config) {
+	Model(Config config) {
 		this.config = config;
 		num_sci = config.sci_rate;
 		time_periods = config.time_periods;
@@ -36,21 +36,20 @@ public class Model {
 		start_effort_mean = config.start_effort_mean;
 		k_mean = config.k_mean;
 		learning_rate_mean = config.learning_rate_mean;
-		discov_rate = config.discov_rate;
+		discov_rate = config.discov_rate_mean;
     }
 	
 	// defines the process for one time period within the model
-    public void step() {
+    void step() {
     	age_scientists();
     	birth_new_scientists();
 
 		int ideas_last_tp = birth_new_ideas(); // keep track of how many old ideas so we only have to update new ideas
 		update_scientist_idea(ideas_last_tp);
 
-    	for(int s = 0; s < scientist_list.size(); s++) {
-    		Scientist sci = scientist_list.get(s);
-    		sci.step();
-    	}
+		for (Scientist sci : scientist_list) {
+			sci.step();
+		}
 
     	update_objects();
     	pay_out_returns();
@@ -59,15 +58,14 @@ public class Model {
     }
 
     // adds one year to the age of every scientist that already exists within the model
-    public void age_scientists() {
-    	for(int s = 0; s < scientist_list.size(); s++) {
-    		Scientist sci = scientist_list.get(s);
+	void age_scientists() {
+    	for (Scientist sci : scientist_list) {
     		sci.age++;
-    	}
+		}
     }
 
     // creates new scientists, birthed at age 0, and sets their random constants (variances, learning speed, and effort)
-	public void birth_new_scientists() {
+	void birth_new_scientists() {
     	for(int s = 0; s < num_sci; s++) {
     		Scientist sci = new Scientist(this);
     		scientist_list.add(sci);
@@ -76,7 +74,7 @@ public class Model {
 
     // creates new ideas and sets their random constants (true mean, true max, investment cost)
 	// returns the number of ideas from last tp
-	public int birth_new_ideas() {
+	int birth_new_ideas() {
     	for(int i = 0; i < ideas_per_time; i++) {
     		Idea idea = new Idea(this);
     		idea_list.add(idea);
@@ -87,7 +85,7 @@ public class Model {
 
     // loop through every scientist, appending their perceived rewards dataframe with new ideas
 	// also updates related list with extra spots for new ideas --> append_scientist_lists
-	public void update_scientist_idea(int ideas_last_tp) {
+	void update_scientist_idea(int ideas_last_tp) {
     	for (Scientist sci : scientist_list) {
 			// determining how many loops we need to run (for performance efficiency)
 			// just born scientists need to update for all ideas --> sci.age = 0
@@ -125,31 +123,21 @@ public class Model {
     		
     		// determine which ideas a scientist will discover
 			int count = 0;
-			if(sci.age == 0) {
-				while (count < 2 * sci.discov_rate) {
-        			int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
-        			if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
-    					sci.discov_ideas.set(new_idea_idx, 1);
-    					count++;
-    				}
-    			}
+    		int tru_rate = (sci.age == 0) ? 2 * sci.discov_rate : discov_rate; // scientist just born discovers twice as many ideas
+			while (count < tru_rate) {
+				int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
+				if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
+					sci.discov_ideas.set(new_idea_idx, 1);
+					count++;
+				}
 			}
-			if(sci.age != 0) {
-    			while (count < sci.discov_rate) {
-        			int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
-        			if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered
-    					sci.discov_ideas.set(new_idea_idx, 1);
-    					count++;
-    				}
-    			}
-    		}
     	}
     }
 
 	// updates the lists within each scientist object to reflect the correct number of available ideas
     // ignore static warning, only because we aren't using self keyword
 	// keep it in model since it is called by the model step function --> set_perceived_rewards()
-	public void append_scientist_lists(Scientist sci) {
+	void append_scientist_lists(Scientist sci) {
     	sci.idea_eff_tp.add(0.0);
         sci.idea_eff_tot.add(0.0);
         sci.ideas_k_paid_tp.add(0);
@@ -160,10 +148,10 @@ public class Model {
     }
 
     // data collection: loop through each idea object, updating the effort that was invested in this time period
-	public void update_objects() {
+	void update_objects() {
     	for(int idx = 0; idx < idea_list.size(); idx++) {
     		Idea idea = idea_list.get(idx);
-    		int effort_invested_tp = 0;
+    		double effort_invested_tp = 0;
     		int k_paid_tp = 0; // number of scientists who learned the idea in this tp
 
     		for (Scientist sci : scientist_list) {
@@ -179,12 +167,12 @@ public class Model {
     }
 
     // determine who gets paid out based on the amount of effort input
-	public void pay_out_returns() {
+	void pay_out_returns() {
     	for(int i = 0; i < idea_list.size(); i++) {
     		Idea idea = idea_list.get(i);
-    		if(idea.effort_by_tp.get(tp) != 0) {
-    			int start_effort = idea.total_effort - idea.effort_by_tp.get(tp); // since we already updated effort_by_tp in update_objects()
-    			int end_effort = idea.total_effort;
+    		if(idea.effort_by_tp.get(tp) > 0) {
+    			double start_effort = idea.total_effort - idea.effort_by_tp.get(tp); // since we already updated effort_by_tp in update_objects()
+    			double end_effort = idea.total_effort;
     			double idea_returns = Idea.get_returns(idea.idea_mean, idea.idea_sds, idea.idea_max, start_effort, end_effort);
     			process_winners(i, idea_returns); // process the winner for each idea, one per loop
     		}
@@ -197,8 +185,8 @@ public class Model {
     }
 
     // processes winners for idea with index iidx
-	public void process_winners(int iidx, double idea_returns) {
-    	ArrayList<Integer> list_of_investors = new ArrayList<Integer>();
+	void process_winners(int iidx, double idea_returns) {
+    	ArrayList<Integer> list_of_investors = new ArrayList<>();
     	for(int s = 0; s < scientist_list.size(); s++) {
     		Scientist sci = scientist_list.get(s);
     		if(sci.idea_eff_tp.get(iidx) != 0) {

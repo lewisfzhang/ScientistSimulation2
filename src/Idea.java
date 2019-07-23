@@ -1,28 +1,28 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Idea {
+class Idea {
     // instrinsic variables
-    public Model model;
-    public int id;
+    Model model;
+    int id;
 
     // research impact variables
-	public int idea_mean; // aka inflection point
-    public int idea_max; // multiple, curve goes from 0 - M
-    public int idea_sds; 
-    public int idea_k; // entry cost/barrier to enter an idea
+	int idea_mean; // aka inflection point
+    int idea_max; // multiple, curve goes from 0 - M
+    int idea_sds;
+    int idea_k; // entry cost/barrier to enter an idea
 
     // social impact variables
-    public int social_mean; // aka inflection point
-    public int social_max; // multiple, curve goes from 0 - M
+    int social_mean; // aka inflection point
+    int social_max; // multiple, curve goes from 0 - M
 
     // idea collectors
-    public int total_effort; // total effort invested in idea to date, also accessed by optimization algorithms
-    public int num_k_total;
-    public ArrayList<Integer> effort_by_tp; // total effort invested in idea by period
-    public ArrayList<Integer> num_k_by_tp; // number people who paid investment cost by period
+    double total_effort; // total effort invested in idea to date, also accessed by optimization algorithms
+    int num_k_total; // total number of scientists who have invested in idea to date, accessed by smart_opt
+    ArrayList<Double> effort_by_tp; // total effort invested in idea by period
+    ArrayList<Integer> num_k_by_tp; // number people who paid investment cost by period
 
-    public Idea(Model model) {
+    Idea(Model model) {
     	this.model = model;
     	this.id = model.idea_list.size(); // Idea object is created before appending to list --> get current list size before append as idx
 
@@ -36,23 +36,23 @@ public class Idea {
 
         total_effort = 0;
         num_k_total = 0;
-        effort_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
+        effort_by_tp = new ArrayList<Double>(Collections.nCopies(model.time_periods, 0.0));
         num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
     }
 
     // STATIC: helper functions for calculating idea curve
-    public static double get_returns(double means, double sds, double max, int start_idx, int end_idx) {
+    static double get_returns(double means, double sds, double max, double start_idx, double end_idx) {
         double start = max * logistic_cdf(start_idx, means, sds);
         double end = max * logistic_cdf(end_idx, means, sds);
         return end - start;
     }
 
-    public static double old_logistic_cdf(int x, double loc, double scale) {
+    static double old_logistic_cdf(double x, double loc, double scale) {
         return 1 / (1 + Math.exp((loc - x) / (double) scale));
     }
 
     // normalizing so that all idea curves start at (0,0)
-    public static double logistic_cdf(int x, double loc, double scale) {
+    static double logistic_cdf(double x, double loc, double scale) {
         return (old_logistic_cdf(x, loc, scale) - old_logistic_cdf(0, loc, scale)) / (1 - old_logistic_cdf(0, loc, scale));
     }
 }

@@ -1,35 +1,50 @@
 import java.util.Random;
 
 class Config {
-    public int seed = 123;
-    public int[] seed_array;
-    public int next_seed_idx;
+    String parent_dir;
 
-    public int time_periods = 20;
-    public int ideas_per_time = 10;
-    public int sci_rate = 10;
-    public int tp_alive = 8;
+    int seed = 123;
+    int[] seed_array;
+    int next_seed_idx;
+
+    int time_periods = 20;
+    int ideas_per_time = 10;
+    int sci_rate = 10;
+    int tp_alive = 8;
 
     // related to idea
-    public int idea_mean = 300;
-    public int idea_sds = (int) (0.25 * idea_mean); // 75
-    public int idea_max = 100;
-    public int k_mean = (int) ((1.0/8) * idea_mean); // 37
+    int idea_mean = 300;
+    int idea_sds = (int) (0.25 * idea_mean); // 75
+    int idea_max = 100;
+    int k_mean = (int) ((1.0/8) * idea_mean); // 37
 
     // related to scientist
-    public int start_effort_mean = (int) (0.5 * idea_mean); // 150
-    public int learning_rate_mean = 1;
-    public int discov_rate = 2;
+    int start_effort_mean = (int) (0.5 * idea_mean); // 150
+    int learning_rate_mean = 1;
+    int discov_rate_mean = 2; // (int) (0.5 * ideas_per_time); // 5
 
-    public boolean equal_returns = true;
+    boolean equal_returns = true;
+    boolean smart_opt = true;
 
-    public static int max_weight = 3;
+    static int max_weight = 3;
 
-    public Config() {
+    Config() {
+        get_path();
         set_seed();
     }
 
-    public void set_seed() {
+    void get_path() {
+        String s = getClass().getName();
+        int i = s.lastIndexOf(".");
+        if(i > -1) s = s.substring(i + 1);
+        s = s + ".class";
+        // System.out.println("name " +s);
+        String testPath = this.getClass().getResource(s).toString();
+        parent_dir = testPath.substring(5, testPath.length() - s.length() - 1);
+        // System.out.println(parent_dir);
+    }
+
+    void set_seed() {
         Random r = new Random();
         r.setSeed(seed);
         this.seed_array = new int[10000000]; // initialize 10000000 random seeds
@@ -39,7 +54,7 @@ class Config {
         this.next_seed_idx = 0; // keeps track of the last seed that was used
     }
 
-    public int get_next_seed() {
+    int get_next_seed() {
         this.next_seed_idx++;
         if (this.next_seed_idx == this.seed_array.length) {
             this.next_seed_idx = 0; // loop back in the seed array

@@ -1,15 +1,15 @@
-import java.util.*;
+import java.util.ArrayList;
 import java.lang.Object;
 import java.lang.Math;
 
-public class Collect {
-	public Model model;
+class Collect {
+	Model model;
 
-	public Collect(Model model) {
+	Collect(Model model) {
 		this.model = model;
 	}
 
-	public void collect_data() {
+	void collect_data() {
 
 		// SAVE EVERYTHING AS CSV, create helper functions
 

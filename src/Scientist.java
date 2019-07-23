@@ -2,50 +2,51 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
 
-public class Scientist {
-    public Model model;
-    public int id;
-    public int age = 0; // SCALAR: age of the given scientists, initiated at 0 years when entered into model
-    public int tp_alive;
+class Scientist {
+    Model model;
+    int id;
+    int age = 0; // SCALAR: age of the given scientists, initiated at 0 years when entered into model
+    int tp_alive;
 
     // SCALAR: multiplier determining scientist specific K (idea K * learning speed = specific k)
     // learning speed is CONSTANT for all ideas for a scientist --> 'lam' centered around 1
-    public double learning_speed;
+    double learning_speed;
 
     // Logic: some scientists will be more optimistic than others
-    public double idea_max_mult; // SCALAR: multiplier determining max perceived returns
-    public double idea_sds_mult; // SCALAR: multiplier determining sds of perceived returns
-    public double idea_mean_mult; // SCALAR: multiplier determining perceived lambda
+    double idea_max_mult; // SCALAR: multiplier determining max perceived returns
+    double idea_sds_mult; // SCALAR: multiplier determining sds of perceived returns
+    double idea_mean_mult; // SCALAR: multiplier determining perceived lambda
 
-    public double start_effort; // SCALAR: determines starting effort for a scientist in all periods
-    public double avail_effort; // SCALAR: counter that determines how much effort a scientist has left to allocate within TP
-    public HashMap<String, ArrayList<Double>> perceived_rewards; // tracks perceived rewards
+    double start_effort; // SCALAR: determines starting effort for a scientist in all periods
+    double avail_effort; // SCALAR: counter that determines how much effort a scientist has left to allocate within TP
+    HashMap<String, ArrayList<Double>> perceived_rewards; // tracks perceived rewards
 
     // used in optimization
-    public ArrayList<Double> marg_eff;
+    ArrayList<Double> marg_eff;
 
     // data collection: creates lists to track investment within and across time periods
-    public ArrayList<Double> idea_eff_tp = new ArrayList<>(); // tracks the effort to be invested across different ideas within time period
-    public ArrayList<Double> idea_eff_tot = new ArrayList<>(); // tracks the total effort invested in each idea by the scientist
+    ArrayList<Double> idea_eff_tp = new ArrayList<>(); // tracks the effort to be invested across different ideas within time period
+    ArrayList<Double> idea_eff_tot = new ArrayList<>(); // tracks the total effort invested in each idea by the scientist
 
     // k_paid: 0 = haven't learned, 1 = already paid learning cost
-    public ArrayList<Integer> ideas_k_paid_tp = new ArrayList<>(); // records which ideas the scientist paid investment cost for this period
-    public ArrayList<Integer> ideas_k_paid_tot = new ArrayList<>(); // records which ideas the scientist has paid the investment cost for overall
+    ArrayList<Integer> ideas_k_paid_tp = new ArrayList<>(); // records which ideas the scientist paid investment cost for this period
+    ArrayList<Integer> ideas_k_paid_tot = new ArrayList<>(); // records which ideas the scientist has paid the investment cost for overall
 
-    public ArrayList<Integer> discov_ideas = new ArrayList<>(); // 1 = discovered, 0 = not discovered
-    public int discov_rate;
+    ArrayList<Integer> discov_ideas = new ArrayList<>(); // 1 = discovered, 0 = not discovered
+    int discov_rate;
         
-    public ArrayList<Double> returns_tp = new ArrayList<>(); // tracks the returns by idea within time period for the scientist
-    public ArrayList<Double> returns_tot = new ArrayList<>(); // records the sum of returns the scientist has accrued for each idea
-    public ArrayList<Double> overall_returns_tp = new ArrayList<>(); // tracks returns by tp
+    ArrayList<Double> returns_tp = new ArrayList<>(); // tracks the returns by idea within time period for the scientist
+    ArrayList<Double> returns_tot = new ArrayList<>(); // records the sum of returns the scientist has accrued for each idea
+    ArrayList<Double> overall_returns_tp = new ArrayList<>(); // tracks returns by tp
 
 
-    public Scientist(Model model) {
+    Scientist(Model model) {
         this.model = model;
         this.id = model.scientist_list.size(); // Scientist object is created before appending to list --> get current list size before append as idx
+        this.tp_alive = model.tp_alive; // WILL CHANGE WITH VARIANCE
 
         this.learning_speed = Functions.poisson(10 * model.learning_rate_mean) / 10.0;
-        this.discov_rate = model.discov_rate;
+        this.discov_rate = model.discov_rate; // WILL CHANGE LATER ON!
 
         this.idea_max_mult = Functions.get_random_double(0.5, 1.5, model.config);
         this.idea_sds_mult = Functions.get_random_double(0.5, 1.5, model.config);
@@ -61,27 +62,29 @@ public class Scientist {
         this.perceived_rewards.put("Idea K", new ArrayList<>());
     }
 
-    public void step() {
+    void step() {
     	reset_trackers();
 
     	// scientist is still active
-        if (this.age < this.model.tp_alive) {
-            this.avail_effort = this.start_effort; // reset avail_effort each time period
+        if (this.age < this.tp_alive) {
+            this.avail_effort = this.start_effort; // reset avail_effort each time period, maybe add decay later
 
-            HashMap<String, ArrayList<Double>> inv_dict = Optimize.investing_helper(this);
+            HashMap<String, ArrayList<Double>> inv_dict;
+            if (model.config.smart_opt) {inv_dict = new Smart_Optimize().investing_helper(this);}
+            else {inv_dict = Optimize.investing_helper(this);}
 
             update_trackers(inv_dict);
         }
     }
 
     // reset time period trackers to all zeros
-    public void reset_trackers() {
-        this.idea_eff_tp = new ArrayList<Double>(Collections.nCopies(this.idea_eff_tp.size(), 0.0));
-        this.ideas_k_paid_tp = new ArrayList<Integer>(Collections.nCopies(this.ideas_k_paid_tp.size(), 0));
-        this.returns_tp = new ArrayList<Double>(Collections.nCopies(this.returns_tp.size(), 0.0));
+    void reset_trackers() {
+        this.idea_eff_tp = new ArrayList<>(Collections.nCopies(this.idea_eff_tp.size(), 0.0));
+        this.ideas_k_paid_tp = new ArrayList<>(Collections.nCopies(this.ideas_k_paid_tp.size(), 0));
+        this.returns_tp = new ArrayList<>(Collections.nCopies(this.returns_tp.size(), 0.0));
     }
 
-    public void update_trackers(HashMap<String, ArrayList<Double>> inv_dict) {
+    void update_trackers(HashMap<String, ArrayList<Double>> inv_dict) {
         // loop through all investments made within time period
         for (int idx=0; idx<inv_dict.get("idea_idx").size(); idx++) {
             double idea_index = inv_dict.get("idea_idx").get(idx);
