@@ -26,10 +26,10 @@ class Idea {
     	this.model = model;
     	this.id = model.idea_list.size(); // Idea object is created before appending to list --> get current list size before append as idx
 
-    	idea_mean = Functions.poisson(model.idea_mean);
-    	idea_max = Functions.poisson(model.idea_max);
-    	idea_sds = Functions.poisson(model.idea_sds);
-    	idea_k = Functions.poisson(model.k_mean);
+    	idea_mean = Functions.poisson(model.idea_mean, model.config);
+    	idea_max = Functions.poisson(model.idea_max, model.config);
+    	idea_sds = Functions.poisson(model.idea_sds, model.config);
+    	idea_k = Functions.poisson(model.k_mean, model.config);
 
     	social_mean = (int) (idea_mean * Functions.get_random_double(1.0, 2.0, model.config)); // social impact must come after research impact, so multiple of 1-2
         social_max = (int) (idea_max * Functions.get_random_double(0.5, 1.5, model.config)); // social impact range based on multiplier of 0.5-1.5 of research impact range

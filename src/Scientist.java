@@ -45,14 +45,14 @@ class Scientist {
         this.id = model.scientist_list.size(); // Scientist object is created before appending to list --> get current list size before append as idx
         this.tp_alive = model.tp_alive; // WILL CHANGE WITH VARIANCE
 
-        this.learning_speed = Functions.poisson(10 * model.learning_rate_mean) / 10.0;
+        this.learning_speed = Functions.poisson(10 * model.learning_rate_mean, model.config) / 10.0;
         this.discov_rate = model.discov_rate; // WILL CHANGE LATER ON!
 
         this.idea_max_mult = Functions.get_random_double(0.5, 1.5, model.config);
         this.idea_sds_mult = Functions.get_random_double(0.5, 1.5, model.config);
         this.idea_mean_mult = Functions.get_random_double(0.5, 1.5, model.config);
 
-        this.start_effort = Functions.poisson(model.start_effort_mean);
+        this.start_effort = Functions.poisson(model.start_effort_mean, model.config);
         this.avail_effort = this.start_effort;
 
         this.perceived_rewards = new HashMap<>();
