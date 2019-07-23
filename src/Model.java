@@ -5,18 +5,9 @@ class Model {
 	// initiates the key parameters within the model, as set in config
 	Config config;
 
-	// SCALARS
+	// SCALARS, all updated in model step
 	int num_sci;
-	int time_periods;
 	int ideas_per_time;
-	int tp_alive;
-	int k_mean;
-	int idea_mean;
-	int idea_max;
-	int idea_sds;
-	int start_effort_mean;
-	int learning_rate_mean;
-	int discov_rate;
 	int tp = 0;
 
 	// ARRAYS: creates empty arraylists to track scientists and ideas; index indicates age
@@ -26,21 +17,14 @@ class Model {
 	// model constructor
 	Model(Config config) {
 		this.config = config;
-		num_sci = config.sci_rate;
-		time_periods = config.time_periods;
-		ideas_per_time = config.ideas_per_time;
-		idea_mean = config.idea_mean;
-		idea_max = config.idea_max;
-		idea_sds = config.idea_sds;
-		tp_alive = config.tp_alive;
-		start_effort_mean = config.start_effort_mean;
-		k_mean = config.k_mean;
-		learning_rate_mean = config.learning_rate_mean;
-		discov_rate = config.discov_rate_mean;
     }
 	
 	// defines the process for one time period within the model
     void step() {
+		// recompute random number of ideas and scientists born within this time period
+		num_sci = Functions.poisson(config.sci_rate, config);
+		ideas_per_time = Functions.poisson(config.ideas_per_time, config);
+
     	age_scientists();
     	birth_new_scientists();
 
@@ -90,40 +74,40 @@ class Model {
 			// determining how many loops we need to run (for performance efficiency)
 			// just born scientists need to update for all ideas --> sci.age = 0
 			// older scientists only need to update for new ideas
-    		int idea_list_start_idx = (sci.age == 0) ? 0 : ideas_last_tp;
+			int idea_list_start_idx = (sci.age == 0) ? 0 : ideas_last_tp;
 
-    		// slice to iterate only through new ideas, setting up attributes and scientist perception
-    		for (int i = idea_list_start_idx; i < idea_list.size(); i++) {
-    			Idea idea = idea_list.get(i);
-    			append_scientist_lists(sci); // add element to signal new idea for data collector variables
+			// slice to iterate only through new ideas, setting up attributes and scientist perception
+			for (int i = idea_list_start_idx; i < idea_list.size(); i++) {
+				Idea idea = idea_list.get(i);
+				append_scientist_lists(sci); // add element to signal new idea for data collector variables
 
 				// keeping all normal distributions for sci_mult to 0.3 range --> *** 0.1 sds ***
 				// idea is that sci.idea_mult ranges from 0.5-1.5, so the worst case we get low end of 0.2
-    			double sci_mult_max = Functions.get_normal_number(sci.idea_max_mult, 0.1, config);
-        	    double sci_mult_mean = Functions.get_normal_number(sci.idea_sds_mult, 0.1, config);
-                double sci_mult_sds = Functions.get_normal_number(sci.idea_mean_mult, 0.1, config);
+				double sci_mult_max = Functions.get_normal_number(sci.idea_max_mult, 0.1, config);
+				double sci_mult_mean = Functions.get_normal_number(sci.idea_sds_mult, 0.1, config);
+				double sci_mult_sds = Functions.get_normal_number(sci.idea_mean_mult, 0.1, config);
 
-                double idea_mean = sci_mult_mean * idea.idea_mean;
-                double idea_sds = sci_mult_sds * idea.idea_sds;
-        	    double idea_max = sci_mult_max * idea.idea_max;
-                double idea_k = Math.round(sci.learning_speed * idea.idea_k); // rounds to nearest integer because technically k should also be an int --> units of effort
+				double idea_mean = sci_mult_mean * idea.idea_mean;
+				double idea_sds = sci_mult_sds * idea.idea_sds;
+				double idea_max = sci_mult_max * idea.idea_max;
+				double idea_k = Math.round(sci.learning_speed * idea.idea_k); // rounds to nearest integer because technically k should also be an int --> units of effort
 
 				// updating back to perceived_rewards hashmap
 				sci.perceived_rewards.get("Idea Mean").add(idea_mean);
 				sci.perceived_rewards.get("Idea SDS").add(idea_sds);
 				sci.perceived_rewards.get("Idea Max").add(idea_max);
 				sci.perceived_rewards.get("Idea K").add(idea_k);
-        	}
-    		
-    		// check the previous period to see which newly discovered ideas had their entry costs paid
-    		for(int i = 0; i < sci.ideas_k_paid_tot.size(); i++) {
-    			if(sci.discov_ideas.get(i) == 1 & sci.ideas_k_paid_tot.get(i) == 0)
-    				sci.discov_ideas.set(i, 0);
-    		}
-    		
-    		// determine which ideas a scientist will discover
+			}
+
+			// check the previous period to see which newly discovered ideas had their entry costs paid --> removes/sets to 0 the ones that weren't learned, aka forgotten
+			for (int i = 0; i < sci.ideas_k_paid_tot.size(); i++) {
+				if (sci.discov_ideas.get(i) == 1 & sci.ideas_k_paid_tot.get(i) == 0)
+					sci.discov_ideas.set(i, 0);
+			}
+
+			// determine which ideas a scientist will discover
 			int count = 0;
-    		int tru_rate = (sci.age == 0) ? 2 * sci.discov_rate : discov_rate; // scientist just born discovers twice as many ideas
+			int tru_rate = (sci.age == 0) ? (int) (2 * sci.discov_rate) : (int) sci.discov_rate; // scientist just born discovers twice as many ideas
 			while (count < tru_rate) {
 				int new_idea_idx = Functions.get_random_int(0, idea_list.size(), config);
 				if (sci.discov_ideas.get(new_idea_idx) == 0) { // only update if idea hasn't been discovered

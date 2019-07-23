@@ -24,6 +24,9 @@ class Smart_Optimize {
 			}
 		}
 
+		// HashMap<String, ArrayList<Double>> a = process_eff(sci);
+		// System.out.println(a);
+		// return a;
 		return process_eff(sci);
 	}
 

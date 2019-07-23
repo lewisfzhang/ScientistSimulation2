@@ -26,18 +26,18 @@ class Idea {
     	this.model = model;
     	this.id = model.idea_list.size(); // Idea object is created before appending to list --> get current list size before append as idx
 
-    	idea_mean = Functions.poisson(model.idea_mean, model.config);
-    	idea_max = Functions.poisson(model.idea_max, model.config);
-    	idea_sds = Functions.poisson(model.idea_sds, model.config);
-    	idea_k = Functions.poisson(model.k_mean, model.config);
+    	idea_mean = Functions.poisson(model.config.idea_mean, model.config);
+    	idea_max = Functions.poisson(model.config.idea_max, model.config);
+    	idea_sds = Functions.poisson(model.config.idea_sds, model.config);
+    	idea_k = Functions.poisson(model.config.k_mean, model.config);
 
     	social_mean = (int) (idea_mean * Functions.get_random_double(1.0, 2.0, model.config)); // social impact must come after research impact, so multiple of 1-2
         social_max = (int) (idea_max * Functions.get_random_double(0.5, 1.5, model.config)); // social impact range based on multiplier of 0.5-1.5 of research impact range
 
         total_effort = 0;
         num_k_total = 0;
-        effort_by_tp = new ArrayList<Double>(Collections.nCopies(model.time_periods, 0.0));
-        num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.time_periods, 0));
+        effort_by_tp = new ArrayList<Double>(Collections.nCopies(model.config.time_periods, 0.0));
+        num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.config.time_periods, 0));
     }
 
     // STATIC: helper functions for calculating idea curve

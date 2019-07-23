@@ -20,13 +20,15 @@ class Config {
 
     // related to scientist
     int start_effort_mean = (int) (0.5 * idea_mean); // 150
+    double decay_prop = 0.2; // by the time a scientist retires, they should have 80% of their starting available effort
     int learning_rate_mean = 1;
-    int discov_rate_mean = 2; // (int) (0.5 * ideas_per_time); // 5
+    int discov_rate_min = (int) (0.2 * ideas_per_time); // 2
+    int discov_rate_max = (int) (0.4 * ideas_per_time); // 4
 
     boolean equal_returns = true;
     boolean smart_opt = true;
 
-    static int max_weight = 3;
+    static int max_weight = 3; // for branch tree purposes
 
     Config() {
         get_path();

@@ -2,7 +2,7 @@ import java.util.Random;
 import java.util.ArrayList;
 
 class Functions {
-    static double get_random_double(double min, double max, Config c) {
+    static double get_random_double(double min, double max, Config c) { // [min,max)
         Random r = new Random(c.get_next_seed());
         return min + ((max - min) * r.nextDouble()); // returns random number between min and max of uniform distribution
     }
