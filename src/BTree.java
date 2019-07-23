@@ -8,7 +8,7 @@ class BTree {
     int height = 0; // keeps track of the length of the longest path/branch in tree
     ArrayList<Node> leafs; // keeps track of all the leaves
     Node root = new Node(-1, 0, null); // dummy with idx of -1 to keep track of all ideas that have been discovered but not learned
-    ArrayList<Integer> line = new ArrayList<>();
+    ArrayList<Integer> line = new ArrayList<>(); // keeps track of discovered ideas where k was already paid by last tp
 
     BTree(ArrayList<Integer> k_paid, ArrayList<Integer> discov_ideas) { // k_paid = sci.k_paid_tot, both arraylists should have the same length
         this.max_weight = Config.max_weight;  // shouldn't need to be used since we only have ~2 new ideas each period
@@ -61,7 +61,6 @@ class BTree {
         Node n = root;
         int i = 0;// i represents index of leaf in path_counter arraylist (last non-null Node)
         while (i<path_counter.size()) {
-//        for (int i=0; i<path_counter.size(); i++) {
             n = (path_counter.get(i) == 0) ? n.left : n.right; // left node is 0, right node is 1 (see new_leafs function)
             if (n != null) {
                 if (n.k == 1) {
