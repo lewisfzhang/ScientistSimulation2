@@ -36,10 +36,10 @@ class Smart_Optimize {
 			}
 		}
 
-		HashMap<String, ArrayList<Double>> a = process_eff(sci);
+		/** HashMap<String, ArrayList<Double>> a = process_eff(sci);
 		System.out.println(a);
-		return a;
-		// return process_eff(sci);
+		return a; */
+		return process_eff(sci);
 	}
 
 	// packages data
@@ -76,7 +76,7 @@ class Smart_Optimize {
 					int[] out = IntStream.range(0, k).map(i -> objects[a[i]]).toArray(); // in python words, [objects[a[i]] for i in range(0,k)] --> stores index of element in arraylist branch
 					if (is_line) { // if we are just computing the line, don't need to check for new ideas
 						yield(Opt_Func.eff_chunker(out, branch, increment));  // emit result, convert double array to double arraylist
-					} else {
+					} else { // CAN IMPROVE HERE, MUST INCLUDE ALL IDEAS --> K IS CALCULATED BAWED ON THAT
 						if (out[out.length-1] >= line.size()) { // if at least one new idea has effort invested in, line.size() = idx of first "new" idea in branch arraylist
 							yield(Opt_Func.eff_chunker(out, branch, increment));  // emit result, convert double array to double arraylist
 						} // else do nothing, go through another loop to find next permutation
@@ -107,13 +107,15 @@ class Smart_Optimize {
 				int idx = entry.getKey(); // idx is index of idea
 				double eff = entry.getValue();
 				if (eff > 0) { // only ones with positive effort matter
+					Idea i = sci.model.idea_list.get(idx);
 					double mean = sci.perceived_rewards.get("Idea Mean").get(idx); // lambda
 					double sds = sci.perceived_rewards.get("Idea SDS").get(idx); // sigma
 					double max = sci.perceived_rewards.get("Idea Max").get(idx); // M
-					double start_idx = sci.model.idea_list.get(idx).total_effort; // total effort T
-					double end_idx = start_idx + eff * sci.model.idea_list.get(idx).num_k_total; // T + e * q --> if learned already
+					double q = i.num_k_total;
+					double start_idx = i.total_effort; // total effort T
+					double end_idx = start_idx + eff * q; // T + e * q --> if learned already
 					if (sci.ideas_k_paid_tot.get(idx) == 0) {end_idx += eff;} // q + 1 if haven't learned
-					curr_sum += Idea.get_returns(mean, sds, max, start_idx, end_idx); // get sum of returns across ideas
+					curr_sum += Idea.get_returns(mean, sds, max, start_idx, end_idx) / q; // get sum of returns across ideas
 				}
 			}
 			if (curr_sum > max_sum) {
