@@ -44,7 +44,7 @@ class Scientist {
     Scientist(Model model) {
         this.model = model;
         id = model.scientist_list.size(); // Scientist object is created before appending to list --> get current list size before append as idx
-        tp_alive = Functions.poisson(model.config.tp_alive, model.config); // scientists have different life spans
+        tp_alive = model.config.tp_alive; // Functions.poisson(model.config.tp_alive, model.config); // scientists have different life spans
 
         learning_speed = Functions.poisson(10 * model.config.learning_rate_mean, model.config) / 10.0;
         discov_rate = Functions.get_random_double(model.config.discov_rate_min, model.config.discov_rate_max, model.config);
