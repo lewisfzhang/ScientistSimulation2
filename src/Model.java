@@ -140,8 +140,8 @@ class Model {
 
 	// pays out grant money from the budget in each period before 
 	void distribute_funding() {
-		ArrayList<Scientist> old_sci = new ArrayList<Scientist>();
-		ArrayList<Scientist> young_sci = new ArrayList<Scientist>();
+		ArrayList<Scientist> old_sci = new ArrayList<>();
+		ArrayList<Scientist> young_sci = new ArrayList<>();
 		int scientists_alive = 0;
 		for(Scientist sci : scientist_list) {
 			if(sci.age < (int) (0.5 * (double) config.tp_alive)) {
@@ -159,37 +159,46 @@ class Model {
 			double total_young_e = config.prop_young_e * total_budget;
 			double total_old_k = config.prop_old_k * total_budget;
 			double total_old_e = config.prop_old_e * total_budget;
+			
 			while(total_young_e > 0) {
-				double e_grant = total_young_e / (config.recipient_prop * young_sci.size());
-				int recipient = Functions.get_random_int(0, young_sci.size(), config);
-				Scientist sci = young_sci.get(recipient);
-				sci.e_funding += e_grant;
-				total_young_e -= e_grant;
-				young_sci.remove(recipient);
+				if(young_sci.size() > 0) {
+					double e_grant = total_young_e / (config.recipient_prop * young_sci.size());
+					int recipient = Functions.get_random_int(0, young_sci.size(), config);
+					Scientist sci = young_sci.get(recipient);
+					sci.e_funding = e_grant;
+					total_young_e -= e_grant;
+					young_sci.remove(recipient);
+				}
 			}
 			while(total_young_k > 0) {
-				double k_grant = total_young_k / (config.recipient_prop * young_sci.size());
-				int recipient = Functions.get_random_int(0, young_sci.size(), config);
-				Scientist sci = young_sci.get(recipient);
-				sci.k_funding += k_grant;
-				total_young_k -= k_grant;
-				young_sci.remove(recipient);
+				if(young_sci.size() > 0) {
+					double k_grant = total_young_k / (config.recipient_prop * young_sci.size());
+					int recipient = Functions.get_random_int(0, young_sci.size(), config);
+					Scientist sci = young_sci.get(recipient);
+					sci.k_funding = k_grant;
+					total_young_k -= k_grant;
+					young_sci.remove(recipient);
+				}
 			}
 			while(total_old_e > 0) {
-				double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
-				int recipient = Functions.get_random_int(0, old_sci.size(), config);
-				Scientist sci = old_sci.get(recipient);
-				sci.e_funding += e_grant;
-				total_old_e -= e_grant;
-				old_sci.remove(recipient);
+				if(old_sci.size() > 0) {
+					double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
+					int recipient = Functions.get_random_int(0, old_sci.size(), config);
+					Scientist sci = old_sci.get(recipient);
+					sci.e_funding = e_grant;
+					total_old_e -= e_grant;
+					old_sci.remove(recipient);
+				}
 			}
-			while(total_old_e > 0) {
-				double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
-				int recipient = Functions.get_random_int(0, old_sci.size(), config);
-				Scientist sci = old_sci.get(recipient);
-				sci.e_funding += e_grant;
-				total_old_e -= e_grant;
-				old_sci.remove(recipient);
+			while(total_old_k > 0) {
+				if(old_sci.size() > 0) {
+					double k_grant = total_old_k / (config.recipient_prop * old_sci.size());
+					int recipient = Functions.get_random_int(0, old_sci.size(), config);
+					Scientist sci = old_sci.get(recipient);
+					sci.k_funding = k_grant;
+					total_old_k -= k_grant;
+					old_sci.remove(recipient);
+				}
 			}
 		}
 	
