@@ -7,12 +7,14 @@ class Model {
 
 	// SCALARS, all updated in model step
 	int num_sci;
+	
 	int ideas_per_time;
 	int tp = 0;
 
 	// ARRAYS: creates empty arraylists to track scientists and ideas; index indicates age
 	ArrayList<Scientist> scientist_list = new ArrayList<>();
 	ArrayList<Idea> idea_list = new ArrayList<>();
+	ArrayList<Integer> num_sci_tp = new ArrayList<>();
 
 	// model constructor
 	Model(Config config) {
@@ -30,6 +32,10 @@ class Model {
 
 		int ideas_last_tp = birth_new_ideas(); // keep track of how many old ideas so we only have to update new ideas
 		update_scientist_idea(ideas_last_tp);
+		
+		if (config.funding) {
+			distribute_funding();
+		}
 
 		for (Scientist sci : scientist_list) {
 			sci.step();
@@ -41,7 +47,7 @@ class Model {
     	tp++;
     }
 
-    // adds one year to the age of every scientist that already exists within the model
+	// adds one year to the age of every scientist that already exists within the model
 	void age_scientists() {
     	for (Scientist sci : scientist_list) {
     		sci.age++;
@@ -54,6 +60,7 @@ class Model {
     		Scientist sci = new Scientist(this);
     		scientist_list.add(sci);
     	}
+    	num_sci_tp.add(num_sci);
     }
 
     // creates new ideas and sets their random constants (true mean, true max, investment cost)
@@ -131,7 +138,62 @@ class Model {
         sci.returns_tot.add(0.0);
     }
 
-    // data collection: loop through each idea object, updating the effort that was invested in this time period
+	// pays out grant money from the budget in each period before 
+	void distribute_funding() {
+		ArrayList<Scientist> old_sci = new ArrayList<Scientist>();
+		ArrayList<Scientist> young_sci = new ArrayList<Scientist>();
+		int scientists_alive = 0;
+		for(Scientist sci : scientist_list) {
+			if(sci.age < (int) (0.5 * (double) config.tp_alive)) {
+				young_sci.add(sci);
+				scientists_alive++;
+			}
+			else if(sci.age < config.tp_alive) {
+				old_sci.add(sci);
+				scientists_alive++;
+			}
+		}
+		
+		int total_budget = (int) (config.budget_prop * scientists_alive * config.start_effort_mean);
+			double total_young_k = config.prop_young_k * total_budget;
+			double total_young_e = config.prop_young_e * total_budget;
+			double total_old_k = config.prop_old_k * total_budget;
+			double total_old_e = config.prop_old_e * total_budget;
+			while(total_young_e > 0) {
+				double e_grant = total_young_e / (config.recipient_prop * young_sci.size());
+				int recipient = Functions.get_random_int(0, young_sci.size(), config);
+				Scientist sci = young_sci.get(recipient);
+				sci.e_funding += e_grant;
+				total_young_e -= e_grant;
+				young_sci.remove(recipient);
+			}
+			while(total_young_k > 0) {
+				double k_grant = total_young_k / (config.recipient_prop * young_sci.size());
+				int recipient = Functions.get_random_int(0, young_sci.size(), config);
+				Scientist sci = young_sci.get(recipient);
+				sci.k_funding += k_grant;
+				total_young_k -= k_grant;
+				young_sci.remove(recipient);
+			}
+			while(total_old_e > 0) {
+				double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
+				int recipient = Functions.get_random_int(0, old_sci.size(), config);
+				Scientist sci = old_sci.get(recipient);
+				sci.e_funding += e_grant;
+				total_old_e -= e_grant;
+				old_sci.remove(recipient);
+			}
+			while(total_old_e > 0) {
+				double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
+				int recipient = Functions.get_random_int(0, old_sci.size(), config);
+				Scientist sci = old_sci.get(recipient);
+				sci.e_funding += e_grant;
+				total_old_e -= e_grant;
+				old_sci.remove(recipient);
+			}
+		}
+	
+	// data collection: loop through each idea object, updating the effort that was invested in this time period
 	void update_objects() {
     	for(int idx = 0; idx < idea_list.size(); idx++) {
     		Idea idea = idea_list.get(idx);

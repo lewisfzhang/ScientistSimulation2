@@ -25,6 +25,15 @@ class Config {
     int discov_rate_min = (int) (0.2 * ideas_per_time); // 2
     int discov_rate_max = (int) (0.4 * ideas_per_time); // 4
 
+    // related to funding
+    double budget_prop = 0.25; // budget_proportion * number_scientists * start_effort_mean
+    double recipient_prop = 0.20;
+    double prop_young_k = 0.25;
+    double prop_young_e = 0.25;
+    double prop_old_k = 0.25;
+    double prop_old_e = 0.25;
+    
+    boolean funding = true;
     boolean equal_returns = true;
     boolean smart_opt = true;
 

@@ -19,6 +19,8 @@ class Scientist {
 
     double start_effort; // SCALAR: determines starting effort for a scientist in all periods
     double avail_effort; // SCALAR: counter that determines how much effort a scientist has left to allocate within TP
+    double e_funding;
+    double k_funding;
     double decay_rate; // SCALAR: rate of age decay, slowing down effort available for scientist in each TP
     HashMap<String, ArrayList<Double>> perceived_rewards; // tracks perceived rewards
 
@@ -68,7 +70,7 @@ class Scientist {
 
     	// scientist is still active
         if (age < tp_alive) {
-            avail_effort = start_effort - age * decay_rate; // reset avail_effort each time period, accounting for age decay
+            avail_effort = start_effort - (age * decay_rate); // reset avail_effort each time period, accounting for age decay
 
             HashMap<String, ArrayList<Double>> inv_dict;
             if (model.config.smart_opt) {inv_dict = new Smart_Optimize().investing_helper(this);}
