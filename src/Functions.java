@@ -1,5 +1,7 @@
+import java.io.*;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 class Functions {
     static double get_random_double(double min, double max, Config c) { // [min,max)
@@ -51,5 +53,129 @@ class Functions {
         for (int i=idx; i<arr.size(); i++) {
             arr.set(i, 0);
         }
+    }
+
+    static double round_double(double x) { // rounds to nearest tenth
+        return Math.round(x * 10)/10.0;
+    }
+
+    static void double_arraylist_2d_to_csv(ArrayList<ArrayList<Double>> arr, String filename, String col_title, Model model) {
+        StringBuilder str1 = new StringBuilder(col_title);
+        StringBuilder str2 = new StringBuilder();
+        int max = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            ArrayList<Double> a1 = arr.get(i);
+            if (a1.size() > max) max = a1.size();
+            str2.append(i);
+            for (double x : a1) {
+                str2.append(',').append(Functions.round_double(x)); // round to nearest tenth
+            }
+            str2.append(System.lineSeparator());
+        }
+        for (int i = 0; i < max; i++) {
+            str1.append(",").append(i);
+        }
+        str1.append(System.lineSeparator()).append(str2.toString());
+        write_csv(String.format("%s/data/%s.csv", model.config.parent_dir, filename), str1.toString());
+    }
+
+    static void int_arraylist_2d_to_csv(ArrayList<ArrayList<Integer>> arr, String filename, String col_title, Model model) {
+        StringBuilder str1 = new StringBuilder(col_title);
+        StringBuilder str2 = new StringBuilder();
+        int max = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            ArrayList<Integer> a1 = arr.get(i);
+            if (a1.size() > max) max = a1.size();
+            str2.append(i);
+            for (int x : a1) {
+                str2.append(',').append(x);
+            }
+            str2.append(System.lineSeparator());
+        }
+        for (int i = 0; i < max; i++) {
+            str1.append(",").append(i);
+        }
+        str1.append(System.lineSeparator()).append(str2.toString());
+        write_csv(String.format("%s/data/%s.csv", model.config.parent_dir, filename), str1.toString());
+    }
+
+    static void hashmap_to_csv(HashMap<String, String> map, int num_col, String filename, String col_title, Model model) {
+        StringBuilder str = new StringBuilder(col_title);
+        for (int i=0; i<num_col; i++) str.append(",").append(i);
+        str.append(System.lineSeparator());
+        for (String key : map.keySet()) {
+            str.append(key).append(",").append(map.get(key)).append(System.lineSeparator());
+        }
+        write_csv(String.format("%s/data/%s.csv", model.config.parent_dir, filename), str.toString());
+    }
+
+    static String double_arraylist_to_csv_string(ArrayList<Double> arr) {
+        StringBuilder str = new StringBuilder().append(arr.get(0));
+        for (int i=1; i<arr.size(); i++) {
+            str.append(",").append(Functions.round_double(arr.get(i))); // round to nearest tenth
+        }
+        return str.toString();
+    }
+
+    static String int_arraylist_to_csv_string(ArrayList<Integer> arr) {
+        StringBuilder str = new StringBuilder().append(arr.get(0));
+        for (int i=1; i<arr.size(); i++) {
+            str.append(",").append(arr.get(i));
+        }
+        return str.toString();
+    }
+
+    static void write_csv(String path, String data) {
+        BufferedWriter bw;
+        try {
+            bw = new BufferedWriter(new FileWriter(new File(path)));
+            bw.write(data);
+            bw.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    static void serialize_model(Model model, Config config) {
+        String filename = String.format("%s/data/saved_objects/model.ser", config.parent_dir);
+        try {
+            //Saving of object in a file
+            FileOutputStream file = new FileOutputStream(new File(filename));
+            ObjectOutputStream out = new ObjectOutputStream(file);
+
+            // Method for serialization of object
+            out.writeObject(model);
+
+            out.close();
+            file.close();
+
+            System.out.println("\nModel object has been serialized");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static Model deserialize_model(Config config) {
+        Model object1 = null;
+        String filename = String.format("%s/data/saved_objects/model.ser", config.parent_dir);
+
+        try {
+            // Reading the object from a file
+            FileInputStream file = new FileInputStream(filename);
+            ObjectInputStream in = new ObjectInputStream(file);
+
+            // Method for deserialization of object
+            object1 = (Model)in.readObject();
+
+            in.close();
+            file.close();
+
+            System.out.println("Object has been deserialized ");
+            return object1;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

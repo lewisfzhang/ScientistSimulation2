@@ -1,6 +1,6 @@
 import java.util.Random;
 
-class Config {
+class Config implements java.io.Serializable {
     String parent_dir;
 
     int seed = 123;
@@ -51,7 +51,7 @@ class Config {
         s = s + ".class";
         // System.out.println("name " +s);
         String testPath = this.getClass().getResource(s).toString();
-        parent_dir = testPath.substring(5, testPath.length() - s.length() - 1);
+        parent_dir = testPath.substring(5, testPath.length() - s.length() - 37);
         // System.out.println(parent_dir);
     }
 

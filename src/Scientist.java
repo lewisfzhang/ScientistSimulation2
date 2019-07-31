@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
 
-class Scientist {
+class Scientist implements java.io.Serializable {
     Model model;
     int id;
     int age = 0; // SCALAR: age of the given scientists, initiated at 0 years when entered into model

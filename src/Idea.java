@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-class Idea {
+class Idea implements java.io.Serializable {
     // instrinsic variables
     Model model;
     int id;
@@ -36,8 +36,8 @@ class Idea {
 
         total_effort = 0;
         num_k_total = 0;
-        effort_by_tp = new ArrayList<Double>(Collections.nCopies(model.config.time_periods, 0.0));
-        num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.config.time_periods, 0));
+        effort_by_tp = new ArrayList<Double>(Collections.nCopies(model.tp, 0.0));
+        num_k_by_tp = new ArrayList<Integer>(Collections.nCopies(model.tp, 0));
     }
 
     // STATIC: helper functions for calculating idea curve

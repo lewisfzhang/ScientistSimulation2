@@ -144,5 +144,3 @@ class Smart_Optimize {
 		return inv_dict;
 	}
 }
-
-

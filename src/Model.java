@@ -1,7 +1,7 @@
 import java.lang.Math;
 import java.util.ArrayList;
 
-class Model {
+class Model implements java.io.Serializable {
 	// initiates the key parameters within the model, as set in config
 	Config config;
 
@@ -161,57 +161,57 @@ class Model {
 		double total_old_e = config.prop_old_e * total_budget;
 
 		while(total_young_e > 0) {
-			double e_grant = total_young_e / (config.recipient_prop * young_sci.size());
-			if(young_sci.size() > 0) {
-				int recipient = Functions.get_random_int(0, young_sci.size(), config);
-				Scientist sci = young_sci.get(recipient);
-				sci.e_funding = e_grant;
-				total_young_e -= e_grant;
-				young_sci.remove(recipient);
-			}
-			if(total_young_e < e_grant) {
-				break;
-			}
+		double e_grant = total_young_e / (config.recipient_prop * young_sci.size());
+		if(young_sci.size() > 0) {
+			int recipient = Functions.get_random_int(0, young_sci.size(), config);
+			Scientist sci = young_sci.get(recipient);
+			sci.e_funding = e_grant;
+			total_young_e -= e_grant;
+			young_sci.remove(recipient);
 		}
-		while(total_young_k > 0) {
-			double k_grant = total_young_k / (config.recipient_prop * young_sci.size());
-			if(young_sci.size() > 0) {
-				int recipient = Functions.get_random_int(0, young_sci.size(), config);
-				Scientist sci = young_sci.get(recipient);
-				sci.k_funding = k_grant;
-				total_young_k -= k_grant;
-				young_sci.remove(recipient);
-			}
-			if(total_young_k < k_grant) {
-				break;
-			}
+		if(total_young_e < e_grant) {
+			break;
 		}
-		while(total_old_e > 0) {
-			double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
-			if(old_sci.size() > 0) {
-				int recipient = Functions.get_random_int(0, old_sci.size(), config);
-				Scientist sci = old_sci.get(recipient);
-				sci.e_funding = e_grant;
-				total_old_e -= e_grant;
-				old_sci.remove(recipient);
-			}
-			if(total_young_e < e_grant) {
-				break;
-			}
+	}
+	while(total_young_k > 0) {
+		double k_grant = total_young_k / (config.recipient_prop * young_sci.size());
+		if(young_sci.size() > 0) {
+			int recipient = Functions.get_random_int(0, young_sci.size(), config);
+			Scientist sci = young_sci.get(recipient);
+			sci.k_funding = k_grant;
+			total_young_k -= k_grant;
+			young_sci.remove(recipient);
 		}
-		while(total_old_k > 0) {
-			double k_grant = total_old_k / (config.recipient_prop * old_sci.size());
-			if(old_sci.size() > 0) {
-				int recipient = Functions.get_random_int(0, old_sci.size(), config);
-				Scientist sci = old_sci.get(recipient);
-				sci.k_funding = k_grant;
-				total_old_k -= k_grant;
-				old_sci.remove(recipient);
-			}
-			if(total_young_k < k_grant) {
-				break;
-			}
+		if(total_young_k < k_grant) {
+			break;
 		}
+	}
+	while(total_old_e > 0) {
+		double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
+		if(old_sci.size() > 0) {
+			int recipient = Functions.get_random_int(0, old_sci.size(), config);
+			Scientist sci = old_sci.get(recipient);
+			sci.e_funding = e_grant;
+			total_old_e -= e_grant;
+			old_sci.remove(recipient);
+		}
+		if(total_young_e < e_grant) {
+			break;
+		}
+	}
+	while(total_old_k > 0) {
+		double k_grant = total_old_k / (config.recipient_prop * old_sci.size());
+		if(old_sci.size() > 0) {
+			int recipient = Functions.get_random_int(0, old_sci.size(), config);
+			Scientist sci = old_sci.get(recipient);
+			sci.k_funding = k_grant;
+			total_old_k -= k_grant;
+			old_sci.remove(recipient);
+		}
+		if(total_young_k < k_grant) {
+			break;
+		}
+	}
 	}
 
 	// data collection: loop through each idea object, updating the effort that was invested in this time period
