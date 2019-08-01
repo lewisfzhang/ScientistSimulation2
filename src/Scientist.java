@@ -19,8 +19,7 @@ class Scientist implements java.io.Serializable {
 
     double start_effort; // SCALAR: determines starting effort for a scientist in all periods
     double avail_effort; // SCALAR: counter that determines how much effort a scientist has left to allocate within TP
-    double e_funding;
-    double k_funding;
+    HashMap <Integer, Integer> funding; // First integer is 
     double decay_rate; // SCALAR: rate of age decay, slowing down effort available for scientist in each TP
     HashMap<String, ArrayList<Double>> perceived_rewards; // tracks perceived rewards
 

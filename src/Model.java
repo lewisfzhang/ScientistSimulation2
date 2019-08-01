@@ -1,5 +1,8 @@
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 class Model implements java.io.Serializable {
 	// initiates the key parameters within the model, as set in config
@@ -138,80 +141,52 @@ class Model implements java.io.Serializable {
 		sci.returns_tot.add(0.0);
 	}
 
-	// pays out grant money from the budget in each period before 
+	// pays out grant money from the budget in each period before scientists make investments
 	void distribute_funding() {
 		ArrayList<Scientist> old_sci = new ArrayList<>();
 		ArrayList<Scientist> young_sci = new ArrayList<>();
 		int scientists_alive = 0;
 		for(Scientist sci : scientist_list) {
-			if(sci.age < (int) (0.5 * (double) config.tp_alive)) {
+			if(sci.age < (int) (0.5 * (double) sci.tp_alive)) {
 				young_sci.add(sci);
 				scientists_alive++;
 			}
-			else if(sci.age < config.tp_alive) {
+			else if(sci.age < sci.tp_alive) {
 				old_sci.add(sci);
 				scientists_alive++;
 			}
 		}
-
 		int total_budget = (int) (config.budget_prop * scientists_alive * config.start_effort_mean);
-		double total_young_k = config.prop_young_k * total_budget;
-		double total_young_e = config.prop_young_e * total_budget;
-		double total_old_k = config.prop_old_k * total_budget;
-		double total_old_e = config.prop_old_e * total_budget;
+		int total_recipients = (int) (scientists_alive * config.budget_prop);
+		int grant_size = total_budget / total_recipients;
+		
+		HashMap<Integer, Double> grant_buckets = new HashMap<>();
+		grant_buckets.put(1, config.y_k_n);
+		grant_buckets.put(2, config.y_k_b);
+		grant_buckets.put(3, config.y_e_n);
+		grant_buckets.put(4, config.y_e_b);
+		grant_buckets.put(5, config.o_k_n);
+		grant_buckets.put(6, config.o_k_b);
+		grant_buckets.put(7, config.o_e_n);
+		grant_buckets.put(8, config.o_e_b);
+		for(int i = 1; i <= 8; i++) {
+			int grant_budget = (int) (grant_buckets.get(i) * total_recipients);
+			while(grant_budget > 0) {
+				assign_individual_grants(i, grant_size, young_sci, old_sci);
+				grant_budget--;
+			}
+		}
+	}
 
-		while(total_young_e > 0) {
-		double e_grant = total_young_e / (config.recipient_prop * young_sci.size());
-		if(young_sci.size() > 0) {
+	void assign_individual_grants(int i, int grant_size, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
+		boolean young_sci_rec = (i <= 4);
+		boolean k_grant_rec = (i == 1 || i == 2 || i == 5 || i == 6);
+		boolean new_idea_rec = (i % 2 != 0);
+		if(young_sci_rec) {
 			int recipient = Functions.get_random_int(0, young_sci.size(), config);
 			Scientist sci = young_sci.get(recipient);
-			sci.e_funding = e_grant;
-			total_young_e -= e_grant;
-			young_sci.remove(recipient);
+			
 		}
-		if(total_young_e < e_grant) {
-			break;
-		}
-	}
-	while(total_young_k > 0) {
-		double k_grant = total_young_k / (config.recipient_prop * young_sci.size());
-		if(young_sci.size() > 0) {
-			int recipient = Functions.get_random_int(0, young_sci.size(), config);
-			Scientist sci = young_sci.get(recipient);
-			sci.k_funding = k_grant;
-			total_young_k -= k_grant;
-			young_sci.remove(recipient);
-		}
-		if(total_young_k < k_grant) {
-			break;
-		}
-	}
-	while(total_old_e > 0) {
-		double e_grant = total_old_e / (config.recipient_prop * old_sci.size());
-		if(old_sci.size() > 0) {
-			int recipient = Functions.get_random_int(0, old_sci.size(), config);
-			Scientist sci = old_sci.get(recipient);
-			sci.e_funding = e_grant;
-			total_old_e -= e_grant;
-			old_sci.remove(recipient);
-		}
-		if(total_young_e < e_grant) {
-			break;
-		}
-	}
-	while(total_old_k > 0) {
-		double k_grant = total_old_k / (config.recipient_prop * old_sci.size());
-		if(old_sci.size() > 0) {
-			int recipient = Functions.get_random_int(0, old_sci.size(), config);
-			Scientist sci = old_sci.get(recipient);
-			sci.k_funding = k_grant;
-			total_old_k -= k_grant;
-			old_sci.remove(recipient);
-		}
-		if(total_young_k < k_grant) {
-			break;
-		}
-	}
 	}
 
 	// data collection: loop through each idea object, updating the effort that was invested in this time period

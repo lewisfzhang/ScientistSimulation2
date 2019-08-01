@@ -55,4 +55,18 @@ class Idea implements java.io.Serializable {
     static double logistic_cdf(double x, double loc, double scale) {
         return (old_logistic_cdf(x, loc, scale) - old_logistic_cdf(0, loc, scale)) / (1 - old_logistic_cdf(0, loc, scale));
     }
+    
+    public int phase() {
+    	int phase_int;
+    	if(this.total_effort < (this.idea_mean - this.idea_sds)) {
+    		phase_int = 0;
+    	}
+    	else if(this.total_effort > (this.idea_mean + this.idea_sds)) {
+    		phase_int = 2;
+    	}
+    	else {
+    		phase_int = 1;
+    	}
+    	return phase_int;
+    }
 }
