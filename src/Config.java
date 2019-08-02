@@ -27,6 +27,7 @@ class Config implements java.io.Serializable {
 
     // related to funding
     double budget_prop = 0.25; // budget_proportion * number_scientists * start_effort_mean
+    double e_grant_size_prop = 0.05;
     double y_k_n = 0.125;
     double y_k_b = 0.125;
     double y_e_n = 0.125;

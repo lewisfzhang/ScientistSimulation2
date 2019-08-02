@@ -166,137 +166,154 @@ class Model implements java.io.Serializable {
 		grant_buckets.put(6, config.o_k_b);
 		grant_buckets.put(7, config.o_e_n);
 		grant_buckets.put(8, config.o_e_b);
-		
+
 		int total_budget = (int) (config.budget_prop * scientists_alive * config.start_effort_mean);
 		int total_recipients = (int) (scientists_alive * config.budget_prop);
-		int e_grant_budget = (int) ((grant_buckets.get(3) + grant_buckets.get(4) + grant_buckets.get(7) + grant_buckets.get(8)) * total_budget);
-		int k_grant_budgets = (int) (total_budget - e_grant_budget);
-		
+		int e_grant_size = (int) (config.e_grant_size_prop * total_budget);
+
 		for(int i = 1; i <= 8; i++) {
-			int grant_budget = (int) (grant_buckets.get(i) * total_recipients);
+			int grant_budget = (int) (grant_buckets.get(i) * total_budget);
 			while(grant_budget > 0) {
-				boolean distributed = assign_individual_grants(i, grant_size, young_sci, old_sci);
-				if(distributed) {
-					grant_budget--;
+				int grant_size = assign_individual_grants(i, e_grant_size, young_sci, old_sci);
+				if(grant_budget - grant_size >= 0) {
+					grant_budget -= Math.abs(grant_size);
+				}
+				else {
+					break;
 				}
 			}
 		}
 	}
 
-	boolean assign_individual_grants(int i, int grant_size, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
-		boolean young_sci_rec = (i <= 4);
-		boolean k_grant_rec = (i == 1 || i == 2 || i == 5 || i == 6);
-		boolean new_idea_rec = (i % 2 != 0);
+	int assign_individual_grants(int i, int e_grant_size, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
+		boolean young_sci_rec = (i <= 4); // true if grant is for young scientists
+		boolean k_grant_rec = (i == 1 || i == 2 || i == 5 || i == 6); // true if k grant
+		boolean new_idea_rec = (i % 2 != 0); // true if grant is for a new idea
+		int grant_size = 0;
 
 		Scientist sci = null;
-		if(young_sci_rec) {
+		if(young_sci_rec) { // selects a random young scientist
 			int recipient = Functions.get_random_int(0, young_sci.size(), config);
 			sci = young_sci.get(recipient);
 		}
-		else {
+		else { // selects a random old scientist
 			int recipient = Functions.get_random_int(0, old_sci.size(), config);
 			sci = old_sci.get(recipient);
 		}
 
-		boolean idea_found = false;
-		if(k_grant_rec) {
-			grant_size = grant_size * -1;
+		/* boolean idea_found = false;
+		if(k_grant_rec) { 
+			grant_size = grant_size * -1; // k grants are allocated as negative integers in the hash map
 		}
+		 */
 
 		ArrayList <Integer> fundable_ideas = new ArrayList<>();
 		for(int j = 0; j < sci.discov_ideas.size(); j++) {
 			boolean discovered = (sci.discov_ideas.get(j) == 1);
 			if(discovered) {
-				fundable_ideas.add(j);
+				fundable_ideas.add(j); // arraylist of discovered idea indices
 			}
 		}
-
+		
+		boolean idea_found = false;
 		while(!idea_found & fundable_ideas.size() > 0) {
 			int idea_choice = Functions.get_random_int(0, fundable_ideas.size(), config);
-			int idea_index = fundable_ideas.get(idea_choice);
+			int idea_index = fundable_ideas.get(idea_choice); // gets the original idea index of the selected idea
 			Idea idea = idea_list.get(idea_index);
 			int idea_phase = idea.phase();
-			if(new_idea_rec & idea_phase == 0 || !new_idea_rec & idea_phase == 1) {
-				sci.funding.put(idea_index, grant_size);
-				idea_found = true;
+			if(new_idea_rec & idea_phase == 0) { // new idea grant and new idea
+				if(k_grant_rec) {
+					grant_size = (int) (idea.idea_k * sci.learning_speed * -1); // negative learning cost if k grant
+					idea_found = true;
+				}
+				else {
+					grant_size = e_grant_size; // standard e grant size if e grant
+					idea_found = true;
+				}
 			}
-			else {
-				fundable_ideas.remove(idea_choice);
+			if(!new_idea_rec & idea_phase == 1) { // old idea grant and old idea
+				if(k_grant_rec) {
+					grant_size = (int) (idea.idea_k * sci.learning_speed * -1);
+					idea_found = true;
+				}
+				else {
+					grant_size = e_grant_size;
+					idea_found = true;
+				}
+			}
+			if(idea_found) {
+				sci.funding.put(idea_index, grant_size); // if an idea is found, place in scientist hash map with grant size
 			}
 		}
-		if(!idea_found) {
-			return false;
-		}
-		else {
-			return true; 
-		}
+		return grant_size;
 	}
 
-	// data collection: loop through each idea object, updating the effort that was invested in this time period
-	void update_objects() {
-		for(int idx = 0; idx < idea_list.size(); idx++) {
-			Idea idea = idea_list.get(idx);
-			double effort_invested_tp = 0;
-			int k_paid_tp = 0; // number of scientists who learned the idea in this tp
 
-			for (Scientist sci : scientist_list) {
-				effort_invested_tp += sci.idea_eff_tp.get(idx);
-				k_paid_tp += sci.ideas_k_paid_tp.get(idx);
-			}
-
-			idea.total_effort += effort_invested_tp;
-			idea.num_k_total += k_paid_tp;
-			idea.effort_by_tp.add(effort_invested_tp);
-			idea.num_k_by_tp.add(k_paid_tp);
-		}
-	}
-
-	// determine who gets paid out based on the amount of effort input
-	void pay_out_returns() {
-		for(int i = 0; i < idea_list.size(); i++) {
-			Idea idea = idea_list.get(i);
-			if(idea.effort_by_tp.get(tp) > 0) {
-				double start_effort = idea.total_effort - idea.effort_by_tp.get(tp); // since we already updated effort_by_tp in update_objects()
-				double end_effort = idea.total_effort;
-				double idea_returns = Idea.get_returns(idea.idea_mean, idea.idea_sds, idea.idea_max, start_effort, end_effort);
-				process_winners(i, idea_returns); // process the winner for each idea, one per loop
-			}
-		}
+// data collection: loop through each idea object, updating the effort that was invested in this time period
+void update_objects() {
+	for(int idx = 0; idx < idea_list.size(); idx++) {
+		Idea idea = idea_list.get(idx);
+		double effort_invested_tp = 0;
+		int k_paid_tp = 0; // number of scientists who learned the idea in this tp
 
 		for (Scientist sci : scientist_list) {
-			double tp_returns = sci.returns_tp.stream().mapToDouble(i -> i).sum(); // sum of sci.returns_tp
-			sci.overall_returns_tp.add(tp_returns);
+			effort_invested_tp += sci.idea_eff_tp.get(idx);
+			k_paid_tp += sci.ideas_k_paid_tp.get(idx);
+		}
+
+		idea.total_effort += effort_invested_tp;
+		idea.num_k_total += k_paid_tp;
+		idea.effort_by_tp.add(effort_invested_tp);
+		idea.num_k_by_tp.add(k_paid_tp);
+	}
+}
+
+// determine who gets paid out based on the amount of effort input
+void pay_out_returns() {
+	for(int i = 0; i < idea_list.size(); i++) {
+		Idea idea = idea_list.get(i);
+		if(idea.effort_by_tp.get(tp) > 0) {
+			double start_effort = idea.total_effort - idea.effort_by_tp.get(tp); // since we already updated effort_by_tp in update_objects()
+			double end_effort = idea.total_effort;
+			double idea_returns = Idea.get_returns(idea.idea_mean, idea.idea_sds, idea.idea_max, start_effort, end_effort);
+			process_winners(i, idea_returns); // process the winner for each idea, one per loop
 		}
 	}
 
-	// processes winners for idea with index iidx
-	void process_winners(int iidx, double idea_returns) {
-		ArrayList<Integer> list_of_investors = new ArrayList<>();
-		for(int s = 0; s < scientist_list.size(); s++) {
-			Scientist sci = scientist_list.get(s);
-			if(sci.idea_eff_tp.get(iidx) != 0) {
-				list_of_investors.add(s);
-			}
-		}
+	for (Scientist sci : scientist_list) {
+		double tp_returns = sci.returns_tp.stream().mapToDouble(i -> i).sum(); // sum of sci.returns_tp
+		sci.overall_returns_tp.add(tp_returns);
+	}
+}
 
-		if(config.equal_returns) { // each scientist receives returns proportional to effort
-			double total_effort_invested = 0; // double so we can do "double" division in 2nd for loop
-			for (int sci_id : list_of_investors) {
-				Scientist sci = scientist_list.get(sci_id);
-				total_effort_invested += sci.idea_eff_tp.get(iidx);
-			}
-			for (int sci_id : list_of_investors) { // must be separate for loop from above since we need to calculate total_effort_invested first
-				Scientist sci = scientist_list.get(sci_id);
-				double individual_proportion = sci.idea_eff_tp.get(iidx) / total_effort_invested;
-				double individual_returns = individual_proportion * total_effort_invested;
-				Functions.arr_increment_double(sci.returns_tp, iidx, individual_returns);
-				Functions.arr_increment_double(sci.returns_tot, iidx, individual_returns);
-			}
-		} else {
-			int oldest_scientist_id = list_of_investors.get(0); // scientist born "earliest" in same tp should come first in list
-			Scientist sci = scientist_list.get(oldest_scientist_id);
-			Functions.arr_increment_double(sci.returns_tp, iidx, idea_returns);
-			Functions.arr_increment_double(sci.returns_tot, iidx, idea_returns);
+// processes winners for idea with index iidx
+void process_winners(int iidx, double idea_returns) {
+	ArrayList<Integer> list_of_investors = new ArrayList<>();
+	for(int s = 0; s < scientist_list.size(); s++) {
+		Scientist sci = scientist_list.get(s);
+		if(sci.idea_eff_tp.get(iidx) != 0) {
+			list_of_investors.add(s);
 		}
 	}
+
+	if(config.equal_returns) { // each scientist receives returns proportional to effort
+		double total_effort_invested = 0; // double so we can do "double" division in 2nd for loop
+		for (int sci_id : list_of_investors) {
+			Scientist sci = scientist_list.get(sci_id);
+			total_effort_invested += sci.idea_eff_tp.get(iidx);
+		}
+		for (int sci_id : list_of_investors) { // must be separate for loop from above since we need to calculate total_effort_invested first
+			Scientist sci = scientist_list.get(sci_id);
+			double individual_proportion = sci.idea_eff_tp.get(iidx) / total_effort_invested;
+			double individual_returns = individual_proportion * total_effort_invested;
+			Functions.arr_increment_double(sci.returns_tp, iidx, individual_returns);
+			Functions.arr_increment_double(sci.returns_tot, iidx, individual_returns);
+		}
+	} else {
+		int oldest_scientist_id = list_of_investors.get(0); // scientist born "earliest" in same tp should come first in list
+		Scientist sci = scientist_list.get(oldest_scientist_id);
+		Functions.arr_increment_double(sci.returns_tp, iidx, idea_returns);
+		Functions.arr_increment_double(sci.returns_tot, iidx, idea_returns);
+	}
+}
 }
