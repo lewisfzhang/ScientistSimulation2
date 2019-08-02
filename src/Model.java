@@ -156,10 +156,7 @@ class Model implements java.io.Serializable {
 				scientists_alive++;
 			}
 		}
-		int total_budget = (int) (config.budget_prop * scientists_alive * config.start_effort_mean);
-		int total_recipients = (int) (scientists_alive * config.budget_prop);
-		int grant_size = total_budget / total_recipients;
-		
+
 		HashMap<Integer, Double> grant_buckets = new HashMap<>();
 		grant_buckets.put(1, config.y_k_n);
 		grant_buckets.put(2, config.y_k_b);
@@ -169,23 +166,69 @@ class Model implements java.io.Serializable {
 		grant_buckets.put(6, config.o_k_b);
 		grant_buckets.put(7, config.o_e_n);
 		grant_buckets.put(8, config.o_e_b);
+		
+		int total_budget = (int) (config.budget_prop * scientists_alive * config.start_effort_mean);
+		int total_recipients = (int) (scientists_alive * config.budget_prop);
+		int e_grant_budget = (int) ((grant_buckets.get(3) + grant_buckets.get(4) + grant_buckets.get(7) + grant_buckets.get(8)) * total_budget);
+		int k_grant_budgets = (int) (total_budget - e_grant_budget);
+		
 		for(int i = 1; i <= 8; i++) {
 			int grant_budget = (int) (grant_buckets.get(i) * total_recipients);
 			while(grant_budget > 0) {
-				assign_individual_grants(i, grant_size, young_sci, old_sci);
-				grant_budget--;
+				boolean distributed = assign_individual_grants(i, grant_size, young_sci, old_sci);
+				if(distributed) {
+					grant_budget--;
+				}
 			}
 		}
 	}
 
-	void assign_individual_grants(int i, int grant_size, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
+	boolean assign_individual_grants(int i, int grant_size, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
 		boolean young_sci_rec = (i <= 4);
 		boolean k_grant_rec = (i == 1 || i == 2 || i == 5 || i == 6);
 		boolean new_idea_rec = (i % 2 != 0);
+
+		Scientist sci = null;
 		if(young_sci_rec) {
 			int recipient = Functions.get_random_int(0, young_sci.size(), config);
-			Scientist sci = young_sci.get(recipient);
-			
+			sci = young_sci.get(recipient);
+		}
+		else {
+			int recipient = Functions.get_random_int(0, old_sci.size(), config);
+			sci = old_sci.get(recipient);
+		}
+
+		boolean idea_found = false;
+		if(k_grant_rec) {
+			grant_size = grant_size * -1;
+		}
+
+		ArrayList <Integer> fundable_ideas = new ArrayList<>();
+		for(int j = 0; j < sci.discov_ideas.size(); j++) {
+			boolean discovered = (sci.discov_ideas.get(j) == 1);
+			if(discovered) {
+				fundable_ideas.add(j);
+			}
+		}
+
+		while(!idea_found & fundable_ideas.size() > 0) {
+			int idea_choice = Functions.get_random_int(0, fundable_ideas.size(), config);
+			int idea_index = fundable_ideas.get(idea_choice);
+			Idea idea = idea_list.get(idea_index);
+			int idea_phase = idea.phase();
+			if(new_idea_rec & idea_phase == 0 || !new_idea_rec & idea_phase == 1) {
+				sci.funding.put(idea_index, grant_size);
+				idea_found = true;
+			}
+			else {
+				fundable_ideas.remove(idea_choice);
+			}
+		}
+		if(!idea_found) {
+			return false;
+		}
+		else {
+			return true; 
 		}
 	}
 
