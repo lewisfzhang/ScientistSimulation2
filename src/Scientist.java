@@ -68,6 +68,12 @@ class Scientist implements java.io.Serializable {
     	this.funding.put(idea_index, funding_amt);
     }
     
+    public void clear_funding() {
+    	for(Integer grants : funding.keySet()) {
+    		funding.remove(grants);
+    	}
+    }
+    
     void step() {
     	reset_trackers();
 

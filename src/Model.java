@@ -271,6 +271,7 @@ void update_objects() {
 		for (Scientist sci : scientist_list) {
 			effort_invested_tp += sci.idea_eff_tp.get(idx);
 			k_paid_tp += sci.ideas_k_paid_tp.get(idx);
+			sci.clear_funding();
 		}
 
 		idea.total_effort += effort_invested_tp;
