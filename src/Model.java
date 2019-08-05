@@ -36,7 +36,7 @@ class Model implements java.io.Serializable {
 		int ideas_last_tp = birth_new_ideas(); // keep track of how many old ideas so we only have to update new ideas
 		update_scientist_idea(ideas_last_tp);
 
-		if (config.funding) {
+		if(config.funding) {
 			distribute_funding();
 		}
 
@@ -167,16 +167,23 @@ class Model implements java.io.Serializable {
 		grant_buckets.put(7, config.o_e_n);
 		grant_buckets.put(8, config.o_e_b);
 
-		int total_budget = (int) (config.budget_prop * scientists_alive * config.start_effort_mean);
+		double total_budget = config.budget_prop * scientists_alive * config.start_effort_mean;
 		int total_recipients = (int) (scientists_alive * config.budget_prop);
-		int e_grant_size = (int) (config.e_grant_size_prop * total_budget);
+		double e_grant_size = config.e_grant_size_prop * total_budget;
 
 		for(int i = 1; i <= 8; i++) {
-			int grant_budget = (int) (grant_buckets.get(i) * total_budget);
+			double grant_budget = grant_buckets.get(i) * total_budget;
+			ArrayList<Scientist> young_sci_eligible = new ArrayList<>(young_sci);
+			ArrayList<Scientist> old_sci_eligible = new ArrayList<> (old_sci);
 			while(grant_budget > 0) {
-				int grant_size = assign_individual_grants(i, e_grant_size, young_sci, old_sci);
-				if(grant_budget - grant_size >= 0) {
-					grant_budget -= Math.abs(grant_size);
+				if(i <= 4 & young_sci_eligible.size() > 0 || i > 4 & old_sci_eligible.size() > 0) {
+					double grant_size = assign_individual_grants(i, e_grant_size, grant_budget, young_sci_eligible, old_sci_eligible);
+					if(grant_budget - Math.abs(grant_size) >= 0) {
+						grant_budget -= Math.abs(grant_size);
+					}
+					else {
+						break;
+					}
 				}
 				else {
 					break;
@@ -185,27 +192,25 @@ class Model implements java.io.Serializable {
 		}
 	}
 
-	int assign_individual_grants(int i, int e_grant_size, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
+	double assign_individual_grants(int i, double e_grant_size, double grant_budget, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
 		boolean young_sci_rec = (i <= 4); // true if grant is for young scientists
 		boolean k_grant_rec = (i == 1 || i == 2 || i == 5 || i == 6); // true if k grant
 		boolean new_idea_rec = (i % 2 != 0); // true if grant is for a new idea
-		int grant_size = 0;
+		double grant_size = 0;
 
 		Scientist sci = null;
-		if(young_sci_rec) { // selects a random young scientist
+		if(young_sci_rec & young_sci.size() > 0) { // selects a random young scientist
 			int recipient = Functions.get_random_int(0, young_sci.size(), config);
 			sci = young_sci.get(recipient);
 		}
-		else { // selects a random old scientist
+		else if(!young_sci_rec & old_sci.size() > 0) { // selects a random old scientist
 			int recipient = Functions.get_random_int(0, old_sci.size(), config);
 			sci = old_sci.get(recipient);
 		}
-
-		/* boolean idea_found = false;
-		if(k_grant_rec) { 
-			grant_size = grant_size * -1; // k grants are allocated as negative integers in the hash map
+		else {
+			young_sci.remove(sci);
+			return grant_size;
 		}
-		 */
 
 		ArrayList <Integer> fundable_ideas = new ArrayList<>();
 		for(int j = 0; j < sci.discov_ideas.size(); j++) {
@@ -216,14 +221,15 @@ class Model implements java.io.Serializable {
 		}
 		
 		boolean idea_found = false;
+		int idea_index = -1;
 		while(!idea_found & fundable_ideas.size() > 0) {
 			int idea_choice = Functions.get_random_int(0, fundable_ideas.size(), config);
-			int idea_index = fundable_ideas.get(idea_choice); // gets the original idea index of the selected idea
+			idea_index = fundable_ideas.get(idea_choice); // gets the original idea index of the selected idea
 			Idea idea = idea_list.get(idea_index);
 			int idea_phase = idea.phase();
 			if(new_idea_rec & idea_phase == 0) { // new idea grant and new idea
 				if(k_grant_rec) {
-					grant_size = (int) (idea.idea_k * sci.learning_speed * -1); // negative learning cost if k grant
+					grant_size = idea.idea_k * sci.learning_speed * -1; // negative learning cost if k grant
 					idea_found = true;
 				}
 				else {
@@ -231,9 +237,9 @@ class Model implements java.io.Serializable {
 					idea_found = true;
 				}
 			}
-			if(!new_idea_rec & idea_phase == 1) { // old idea grant and old idea
+			else if(!new_idea_rec & idea_phase == 1) { // old idea grant and old idea
 				if(k_grant_rec) {
-					grant_size = (int) (idea.idea_k * sci.learning_speed * -1);
+					grant_size = idea.idea_k * sci.learning_speed * -1;
 					idea_found = true;
 				}
 				else {
@@ -241,9 +247,15 @@ class Model implements java.io.Serializable {
 					idea_found = true;
 				}
 			}
-			if(idea_found) {
-				sci.funding.put(idea_index, grant_size); // if an idea is found, place in scientist hash map with grant size
+			else {
+				fundable_ideas.remove(idea_choice);
 			}
+		}
+		if(idea_found & idea_index >= 0 & (grant_budget - Math.abs(grant_size)) >= 0) {
+			sci.add_funding(idea_index, grant_size); // if an idea is found, place in scientist hash map with grant size
+		}
+		else {
+			young_sci.remove(sci);
 		}
 		return grant_size;
 	}
