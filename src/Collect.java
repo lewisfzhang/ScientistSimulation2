@@ -38,27 +38,31 @@ class Collect {
 			}
 		}
 
-		StringBuilder str = new StringBuilder("age_left, q, T, max, mean, sds").append(System.lineSeparator()); // columns in the CSV file
+		StringBuilder str = new StringBuilder("age, q, T, max, mean, sds, impact_left").append(System.lineSeparator()); // columns in the CSV file
 		for (Scientist sci : model.scientist_list) {
 			for (int age = 0; age<sci.tp_alive; age++) {
-				int age_left = sci.tp_alive - age;
+				// int age_left = sci.tp_alive - age;
 				int tp = age + tp_born[sci.id];
 				if (tp >= model.config.time_periods) tp = model.config.time_periods - 1; // keep array in bounds, doesn't matter if some data on older scientists is cut
 				for (int idea_idx=0; idea_idx<model.idea_list.size(); idea_idx++) {
+					Idea i = model.idea_list.get(idea_idx);
 					int q = num_k_total_idea_tp[idea_idx][tp];
 					double T = T_total_idea_tp[idea_idx][tp];
 					double max = sci.perceived_rewards.get("Idea Max").get(idea_idx);
 					double mean = sci.perceived_rewards.get("Idea Mean").get(idea_idx);
 					double sds = sci.perceived_rewards.get("Idea SDS").get(idea_idx);
-					str.append(age_left).append(",")
+					double impact_left = i.idea_max * (1 - Idea.logistic_cdf(T, i.idea_mean, i.idea_sds));
+					str.append(age).append(",")
 							.append(q).append(",")
 							.append(Functions.round_double(T)).append(",")
 							.append(Functions.round_double(max)).append(",")
 							.append(Functions.round_double(mean)).append(",")
-							.append(Functions.round_double(sds)).append(System.lineSeparator());
+							.append(Functions.round_double(sds)).append(",")
+							.append(Functions.round_double(impact_left)).append(System.lineSeparator());
 				}
 			}
 		}
+
 		BufferedWriter bw; // leave this section of duplicated code because we are "appending" to the file
 		try {
 			bw = new BufferedWriter(new FileWriter(model.config.parent_dir + "/data/nn_data.csv", append));
