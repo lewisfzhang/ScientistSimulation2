@@ -1,6 +1,7 @@
 public class Run {
     public static void main(String[] args) {
-        boolean run_model = false;
+        boolean run_model = true;
+        boolean save_model = true;
         boolean use_collect = true;
         boolean append_data = false;
         Config config = new Config();
@@ -18,7 +19,7 @@ public class Run {
                 t.stop_time();
             }
 
-            Functions.serialize_model(model, config);
+            if (save_model) Functions.serialize_model(model, config);
         } else model = Functions.deserialize_model(config);
 
         if (use_collect) {

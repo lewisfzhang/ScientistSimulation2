@@ -58,15 +58,11 @@ class Idea implements java.io.Serializable {
     
     public int phase() {
     	int phase_int;
-    	if(this.total_effort < (this.idea_mean - this.idea_sds)) {
-    		phase_int = 0;
-    	}
-    	else if(this.total_effort > (this.idea_mean + this.idea_sds)) {
-    		phase_int = 2;
-    	}
-    	else {
-    		phase_int = 1;
-    	}
+
+    	if (this.total_effort < (this.idea_mean - this.idea_sds)) phase_int = 0;
+    	else if (this.total_effort > (this.idea_mean + this.idea_sds)) phase_int = 2;
+    	else phase_int = 1;
+
     	return phase_int;
     }
 }
