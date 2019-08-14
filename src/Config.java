@@ -27,16 +27,14 @@ class Config implements java.io.Serializable {
     int discov_rate_max = (int) (0.4 * ideas_per_time); // 4
 
     // related to funding
-    double budget_prop = 0.25; // total_budget = budget_proportion * number_scientists * start_effort_mean
+    double budget_prop = 0.05; // total_budget = budget_proportion * number_scientists * start_effort_mean
     double e_grant_size_prop = 0.05;
     double y_k_n = 0.125;
     double y_k_b = 0.125;
-    double y_e_n = 0.125;
-    double y_e_b = 0.125;
+    double y_e = 0.25;
     double o_k_n = 0.125;
     double o_k_b = 0.125;
-    double o_e_n = 0.125;
-    double o_e_b = 0.125;
+    double o_e = 0.25;
     HashMap<Integer, Double> grant_buckets = new HashMap<>();
     
     boolean funding = true;
@@ -52,12 +50,10 @@ class Config implements java.io.Serializable {
         if (funding) { // update grant buckets
             grant_buckets.put(1, y_k_n);
             grant_buckets.put(2, y_k_b);
-            grant_buckets.put(3, y_e_n);
-            grant_buckets.put(4, y_e_b);
-            grant_buckets.put(5, o_k_n);
-            grant_buckets.put(6, o_k_b);
-            grant_buckets.put(7, o_e_n);
-            grant_buckets.put(8, o_e_b);
+            grant_buckets.put(3, y_e);
+            grant_buckets.put(4, o_k_n);
+            grant_buckets.put(5, o_k_b);
+            grant_buckets.put(6, o_e);
         }
     }
 

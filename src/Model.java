@@ -152,15 +152,15 @@ class Model implements java.io.Serializable {
 		double total_budget = config.budget_prop * scientists_alive * config.start_effort_mean;
 		double e_grant_size = config.e_grant_size_prop * total_budget;
 
-		for(int i = 1; i <= 8; i++) { // i refers to bucket number
+		for(int i = 1; i <= 6; i++) { // i refers to bucket number
 			double grant_budget = config.grant_buckets.get(i) * total_budget;
 			ArrayList<Scientist> young_sci_eligible = new ArrayList<>(young_sci);
 			ArrayList<Scientist> old_sci_eligible = new ArrayList<> (old_sci);
 			while(grant_budget > 0) {
-				if ((i <= 4 && young_sci_eligible.size() > 0) || (i > 4 && old_sci_eligible.size() > 0)) {
+				if ((i <= 3 && young_sci_eligible.size() > 0) || (i > 3 && old_sci_eligible.size() > 0)) {
 					double grant_size = assign_individual_grants(i, e_grant_size, grant_budget, young_sci_eligible, old_sci_eligible);
 					if(grant_budget - Math.abs(grant_size) >= 0) grant_budget -= Math.abs(grant_size);
-					else break; // if the budget is less than grant size, don't distribute grand --> out of money
+					else break; // if the budget is less than grant size, don't distribute grant --> out of money
 				}
 				else break; // no scientist of grant type available to give funding to
 			}
@@ -168,9 +168,9 @@ class Model implements java.io.Serializable {
 	}
 
 	double assign_individual_grants(int i, double e_grant_size, double grant_budget, ArrayList<Scientist> young_sci, ArrayList<Scientist> old_sci) {
-		boolean young_sci_rec = (i <= 4); // true if grant is for young scientists
-		boolean k_grant_rec = (i == 1 || i == 2 || i == 5 || i == 6); // true if k grant
-		boolean new_idea_rec = (i % 2 != 0); // true if grant is for a new idea
+		boolean young_sci_rec = (i <= 3); // true if grant is for young scientists
+		boolean k_grant_rec = (i == 1 || i == 2 || i == 4 || i == 5); // true if k grant
+		boolean new_idea_rec = ((i + 2) % 3 == 0); // true if grant is for a new idea
 		double grant_size = 0;
 
 		Scientist sci;
@@ -189,25 +189,32 @@ class Model implements java.io.Serializable {
 			if (discovered) fundable_ideas.add(j); // arraylist of discovered idea indices
 		}
 
+		//
 		boolean idea_found = false;
-		int idea_index = -1; // -1 ask a check for below if statement
-		while(!idea_found && fundable_ideas.size() > 0) {
-			int idea_choice = Functions.get_random_int(0, fundable_ideas.size(), config);
-			idea_index = fundable_ideas.get(idea_choice); // gets the original idea index of the selected idea
-			Idea idea = idea_list.get(idea_index);
-			int idea_phase = idea.phase();
-			if ((new_idea_rec && idea_phase == 0) || (!new_idea_rec && idea_phase == 1)) { // new idea grant and new idea, or old idea grant and old idea
-				grant_size = (k_grant_rec) ? idea.idea_k * sci.learning_speed * -1 : e_grant_size; // true: negative learning cost if k grant, false: standard e grant size if e grant
-				idea_found = true;
-			} else {
-				fundable_ideas.remove(idea_choice);
+		int idea_index = -2;
+		if (!k_grant_rec) {
+			idea_index = -1;
+			grant_size = e_grant_size;
+			idea_found = true;
+		}
+		else {
+			while(!idea_found && fundable_ideas.size() > 0) {
+				int idea_choice = Functions.get_random_int(0, fundable_ideas.size(), config);
+				idea_index = fundable_ideas.get(idea_choice); // gets the original idea index of the selected idea
+				Idea idea = idea_list.get(idea_index);
+				int idea_phase = idea.phase();
+				if ((new_idea_rec && idea_phase == 0) || (!new_idea_rec && idea_phase == 1)) { // new idea grant and new idea, or old idea grant and old idea
+					grant_size = idea.idea_k * sci.learning_speed; // true: negative learning cost if k grant, false: standard e grant size if e grant
+					idea_found = true;
+				} else {
+					fundable_ideas.remove(idea_choice);
+				}
 			}
 		}
-
-		if(idea_found && idea_index >= 0 && (grant_budget - Math.abs(grant_size)) >= 0) {
+		if(idea_found && (grant_budget - Math.abs(grant_size)) >= 0) {
 			sci.add_funding(idea_index, grant_size); // if an idea is found, place in scientist hash map with grant size
 		} else {
-			if(i <= 4) young_sci.remove(sci);
+			if(i <= 3) young_sci.remove(sci);
 			else old_sci.remove(sci);
 		}
 		return grant_size;
