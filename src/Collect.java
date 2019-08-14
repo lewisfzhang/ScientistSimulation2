@@ -65,7 +65,7 @@ class Collect {
 
 		BufferedWriter bw; // leave this section of duplicated code because we are "appending" to the file
 		try {
-			bw = new BufferedWriter(new FileWriter(model.config.parent_dir + "/data/nn_data.csv", append));
+			bw = new BufferedWriter(new FileWriter(model.config.parent_dir + "/data/nn/nn_data.csv", append));
 			bw.write(str.toString());
 			bw.close();
 		} catch (IOException ioe) {

@@ -37,7 +37,7 @@ class Config implements java.io.Serializable {
     double o_e = 0.25;
     HashMap<Integer, Double> grant_buckets = new HashMap<>();
     
-    boolean funding = true;
+    boolean funding = false;
     boolean equal_returns = true;
     boolean smart_opt = true;
 

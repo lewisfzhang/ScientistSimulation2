@@ -76,7 +76,7 @@ class Functions {
             str1.append(",").append(i);
         }
         str1.append(System.lineSeparator()).append(str2.toString());
-        write_csv(String.format("%s/data/%s.csv", model.config.parent_dir, filename), str1.toString());
+        write_csv(String.format("%s/data/model/%s.csv", model.config.parent_dir, filename), str1.toString());
     }
 
     static void int_arraylist_2d_to_csv(ArrayList<ArrayList<Integer>> arr, String filename, String col_title, Model model) {
@@ -96,7 +96,7 @@ class Functions {
             str1.append(",").append(i);
         }
         str1.append(System.lineSeparator()).append(str2.toString());
-        write_csv(String.format("%s/data/%s.csv", model.config.parent_dir, filename), str1.toString());
+        write_csv(String.format("%s/data/model/%s.csv", model.config.parent_dir, filename), str1.toString());
     }
 
     static void hashmap_to_csv(HashMap<String, String> map, int num_col, String filename, String col_title, Model model) {
@@ -106,7 +106,7 @@ class Functions {
         for (String key : map.keySet()) {
             str.append(key).append(",").append(map.get(key)).append(System.lineSeparator());
         }
-        write_csv(String.format("%s/data/%s.csv", model.config.parent_dir, filename), str.toString());
+        write_csv(String.format("%s/data/model/%s.csv", model.config.parent_dir, filename), str.toString());
     }
 
     static String double_arraylist_to_csv_string(ArrayList<Double> arr) {
