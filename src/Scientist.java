@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Map;
 
 class Scientist implements java.io.Serializable {
     Model model;
@@ -75,11 +76,24 @@ class Scientist implements java.io.Serializable {
         if (age < tp_alive) {
             avail_effort = start_effort - (age * decay_rate); // reset avail_effort each time period, accounting for age decay
 
+            if (model.config.funding) process_funding();
+
             HashMap<String, ArrayList<Double>> inv_dict;
             if (model.config.smart_opt) {inv_dict = new Smart_Optimize().investing_helper(this);}
             else {inv_dict = Optimize.investing_helper(this);}
 
             update_trackers(inv_dict);
+        }
+    }
+
+    void process_funding() {
+        for (Map.Entry<Integer, Double> entry : funding.entrySet()) {
+            if (entry.getKey() == -1) avail_effort += entry.getValue(); // e grants
+            else { // k grants
+                int idea_idx = entry.getKey();
+                ideas_k_paid_tot.set(idea_idx, 1);
+                ideas_k_paid_tp.set(idea_idx, 1); // NOTE FIGURE OUT HOW TO TRACK WHICH IDEAS LEARNED WERE PAID BY FUNDING
+            }
         }
     }
 
