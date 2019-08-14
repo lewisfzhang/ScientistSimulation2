@@ -15,20 +15,39 @@ class Collect {
 	void neural_net_data(boolean append) {
 		int[][] num_k_total_idea_tp = new int[model.idea_list.size()][model.config.time_periods]; // get Q --> exp number of scientists who have worked on each idea per tp
 		double[][] T_total_idea_tp = new double[model.idea_list.size()][model.config.time_periods]; // T --> total effort in each idea
-		for (int i=0; i<num_k_total_idea_tp.length; i++) { // ideas
+		for (int i = 0; i < num_k_total_idea_tp.length; i++) { // ideas
 			Idea idea = model.idea_list.get(i);
-			for (int j=0; j<num_k_total_idea_tp[0].length; j++) { // tp
-				if (j==0) {
+			for (int j = 0; j < num_k_total_idea_tp[0].length; j++) { // tp
+				if (j == 0) {
 					num_k_total_idea_tp[i][j] = idea.num_k_by_tp.get(j);
 					T_total_idea_tp[i][j] = idea.effort_by_tp.get(j);
 
 				} else {
-					num_k_total_idea_tp[i][j] = num_k_total_idea_tp[i][j-1] + idea.num_k_by_tp.get(j); // cumulutative
-					T_total_idea_tp[i][j] = T_total_idea_tp[i][j-1] + idea.effort_by_tp.get(j);
+					num_k_total_idea_tp[i][j] = num_k_total_idea_tp[i][j - 1] + idea.num_k_by_tp.get(j); // cumulutative
+					T_total_idea_tp[i][j] = T_total_idea_tp[i][j - 1] + idea.effort_by_tp.get(j);
 				}
 			}
 		}
+		Functions.int_arraylist_2d_to_csv(Functions.int_arr2d_to_list2d(num_k_total_idea_tp), "num_k_total_idea_tp", "tp", model);
+		Functions.double_arraylist_2d_to_csv(Functions.double_arr2d_to_list2d(T_total_idea_tp), "T_total_idea_tp", "tp", model);
 
+		// saving idea and its properties
+		StringBuilder str = new StringBuilder("sci, idea, max, mean, sds").append(System.lineSeparator());
+		for (Scientist sci : model.scientist_list) {
+			for (int idea_idx = 0; idea_idx < model.idea_list.size(); idea_idx++) {
+				double max = sci.perceived_rewards.get("Idea Max").get(idea_idx);
+				double mean = sci.perceived_rewards.get("Idea Mean").get(idea_idx);
+				double sds = sci.perceived_rewards.get("Idea SDS").get(idea_idx);
+				str.append(sci.id).append(",")
+						.append(idea_idx).append(",")
+						.append(Functions.round_double(max)).append(",")
+						.append(Functions.round_double(mean)).append(",")
+						.append(Functions.round_double(sds)).append(System.lineSeparator());
+			}
+		}
+		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/model/perceived_ideas.csv", false);
+
+		// finding the tp that each scientist was born
 		int[] tp_born = new int[model.scientist_list.size()];
 		int idx = 0;
 		for (int tp = 0; tp<model.num_sci_tp.size(); tp++) {
@@ -38,7 +57,8 @@ class Collect {
 			}
 		}
 
-		StringBuilder str = new StringBuilder("age, q, T, max, mean, sds, impact_left").append(System.lineSeparator()); // columns in the CSV file
+		// saving all possible state spaces
+		str = new StringBuilder("age, q, T, max, mean, sds, impact_left").append(System.lineSeparator()); // columns in the CSV file
 		for (Scientist sci : model.scientist_list) {
 			for (int age = 0; age<sci.tp_alive; age++) {
 				// int age_left = sci.tp_alive - age;
@@ -62,15 +82,30 @@ class Collect {
 				}
 			}
 		}
+		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V0_data.csv", append);
 
-		BufferedWriter bw; // leave this section of duplicated code because we are "appending" to the file
-		try {
-			bw = new BufferedWriter(new FileWriter(model.config.parent_dir + "/data/nn/nn_data.csv", append));
-			bw.write(str.toString());
-			bw.close();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+		// saving all action spaces accessed by scientist in the model
+		str = new StringBuilder("sci_id, tp, age");
+		for (int i=0; i<Config.max_ideas; i++) str.append(",").append(i);
+		str.append(System.lineSeparator());
+		for (ArrayList<Integer> a : model.transactions) {
+			// special unhandled cases
+			if (a.size() <= 2 || a.size() - 2 >= Config.max_ideas) { // exceeds action space num_ideas, or no ideas in action space
+				System.out.println("\nERROR: action space invalid...see collect.neural_net_data()");
+				System.out.println(a + "\n");
+				continue;
+			}
+
+			int sci_id = a.get(0);
+			int tp = a.get(1);
+			int sci_age = tp - tp_born[sci_id]; // use scientist age --> alpha, convert using sci_id
+			str.append(sci_id).append(",")
+					.append(tp).append(",")
+					.append(sci_age);
+			for (int x : a) str.append(",").append(x);
+			str.append(System.lineSeparator());
 		}
+		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V1_data.csv", false);
 	}
 
 	void collect_data() {

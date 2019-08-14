@@ -41,6 +41,7 @@ class Config implements java.io.Serializable {
     boolean equal_returns = true;
     boolean smart_opt = true;
 
+    static int max_ideas = 20; // handles vector input size for V1 --> scientist action space should not exceed max_ideas --> scientist should not discover more than 20 ideas
     static int max_weight = 3; // for branch tree purposes
 
     Config() {

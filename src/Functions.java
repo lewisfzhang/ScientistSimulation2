@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,6 +130,41 @@ class Functions {
         BufferedWriter bw;
         try {
             bw = new BufferedWriter(new FileWriter(new File(path)));
+            bw.write(data);
+            bw.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    static ArrayList<ArrayList<Integer>> int_arr2d_to_list2d(int[][] a) {
+        ArrayList<ArrayList<Integer>> out = new ArrayList<>();
+        for (int[] a1 : a) {
+            ArrayList<Integer> temp = new ArrayList<>();
+            for (int x : a1) {
+                temp.add(x);
+            }
+            out.add(temp);
+        }
+        return out;
+    }
+
+    static ArrayList<ArrayList<Double>> double_arr2d_to_list2d(double[][] a) {
+        ArrayList<ArrayList<Double>> out = new ArrayList<>();
+        for (double[] a1 : a) {
+            ArrayList<Double> temp = new ArrayList<>();
+            for (double x : a1) {
+                temp.add(x);
+            }
+            out.add(temp);
+        }
+        return out;
+    }
+
+    static void string_to_csv(String data, String path, boolean append) {
+        BufferedWriter bw; // leave this section of duplicated code because we are "appending" to the file
+        try {
+            bw = new BufferedWriter(new FileWriter(path, append));
             bw.write(data);
             bw.close();
         } catch (IOException ioe) {

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Arrays;
 
 class Scientist implements java.io.Serializable {
     Model model;
@@ -106,6 +107,8 @@ class Scientist implements java.io.Serializable {
 
     void update_trackers(HashMap<String, ArrayList<Double>> inv_dict) {
         // loop through all investments made within time period
+        ArrayList<Integer> transaction = new ArrayList<>(Arrays.asList(id, model.tp));
+
         for (int idx=0; idx<inv_dict.get("idea_idx").size(); idx++) {
             double idea_index = inv_dict.get("idea_idx").get(idx);
             int idea_idx = (int) idea_index;
@@ -113,7 +116,10 @@ class Scientist implements java.io.Serializable {
             int k_paid_inc = (int) k_paid_increment;
             Functions.arr_increment_double(idea_eff_tp, idea_idx, inv_dict.get("marg_eff").get(idx)); // update this period marginal effort per idea
             Functions.arr_increment_int(ideas_k_paid_tp, idea_idx, k_paid_inc); // update which ideas had investment costs paid IN THIS TP
+
+            transaction.add(idea_idx);
         }
+        model.transactions.add(transaction);
 
         // updates "tot"/across time variables with data from corresponding tp variables
         for (int idx=0; idx<idea_eff_tp.size(); idx++) {

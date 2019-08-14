@@ -18,6 +18,7 @@ class Model implements java.io.Serializable {
 	ArrayList<Scientist> scientist_list = new ArrayList<>();
 	ArrayList<Idea> idea_list = new ArrayList<>();
 	ArrayList<Integer> num_sci_tp = new ArrayList<>();
+	ArrayList<ArrayList<Integer>> transactions = new ArrayList<>(); // sci_idx, tp, all idea_idx...
 
 	// model constructor
 	Model(Config config) {
@@ -177,8 +178,7 @@ class Model implements java.io.Serializable {
 		if(young_sci_rec) { // selects a random young scientist
 			int recipient = Functions.get_random_int(0, young_sci.size(), config);
 			sci = young_sci.get(recipient);
-		}
-		else { // selects a random old scientist
+		} else { // selects a random old scientist
 			int recipient = Functions.get_random_int(0, old_sci.size(), config);
 			sci = old_sci.get(recipient);
 		} // else return grant size of 0 --> already covered by above while loop in distribute_funding()
@@ -196,8 +196,7 @@ class Model implements java.io.Serializable {
 			idea_index = -1;
 			grant_size = e_grant_size;
 			idea_found = true;
-		}
-		else {
+		} else {
 			while(!idea_found && fundable_ideas.size() > 0) {
 				int idea_choice = Functions.get_random_int(0, fundable_ideas.size(), config);
 				idea_index = fundable_ideas.get(idea_choice); // gets the original idea index of the selected idea
@@ -211,7 +210,7 @@ class Model implements java.io.Serializable {
 				}
 			}
 		}
-		if(idea_found && (grant_budget - Math.abs(grant_size)) >= 0) {
+		if(idea_found && (grant_budget - Math.abs(grant_size)) >= 0) { // assumption is idea_idx > -2 (see above if-else)
 			sci.add_funding(idea_index, grant_size); // if an idea is found, place in scientist hash map with grant size
 		} else {
 			if(i <= 3) young_sci.remove(sci);

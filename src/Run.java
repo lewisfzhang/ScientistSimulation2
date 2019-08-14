@@ -1,6 +1,6 @@
 public class Run {
     public static void main(String[] args) {
-        boolean run_model = false;
+        boolean run_model = true;
         boolean save_model = true;
         boolean use_collect = true;
         boolean append_data = false;
