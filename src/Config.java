@@ -58,15 +58,15 @@ class Config implements java.io.Serializable {
         }
     }
 
-    void get_path() {
+    void get_path() { // get working directory path (path to local git repository)
         String s = getClass().getName();
         int i = s.lastIndexOf(".");
         if(i > -1) s = s.substring(i + 1);
         s = s + ".class";
-        // System.out.println("name " +s);
         String testPath = this.getClass().getResource(s).toString();
-        parent_dir = testPath.substring(5, testPath.length() - s.length() - 37);
-        // System.out.println(parent_dir);
+        int start = testPath.indexOf("/");
+        int end = testPath.indexOf("ScientistSimulation2") + "ScientistSimulation2".length();
+        parent_dir = testPath.substring(start, end); // from first backslash / up to ...ScientistSimulation2
     }
 
     void set_seed() {
