@@ -60,7 +60,7 @@ class Smart_Optimize {
 		// based on Knuth's lexicographic permuation generation: http://lh3.ggpht.com/_bLHHR6rd5Ug/Sxn2isijPNI/AAAAAAAAAK8/1oSWhhjB7AI/s1600-h/AlgorithmL20.gif
 		// idea from https://stackoverflow.com/questions/11570132/generator-functions-equivalent-in-java
 		// generates all possible allocations/permutations of effort chunks across ideas that will be/have been learned
-		Generator<HashMap<Integer, Double>> effort_perm_gen = new Generator<>() {
+		Generator<HashMap<Integer, Double>> effort_perm_gen = new Generator<HashMap<Integer, Double>>() {
 			public void run() throws InterruptedException {
 				// n multichoose k multisets from the list of objects.  n is the size of the objects
 				// NOTE: k is actually n --> objects to be placed in bins, n is actually k --> the bins
