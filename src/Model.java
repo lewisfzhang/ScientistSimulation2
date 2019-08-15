@@ -252,7 +252,7 @@ class Model implements java.io.Serializable {
 		}
 
 		for (Scientist sci : scientist_list) {
-			double tp_returns = sci.returns_tp.stream().mapToDouble(i -> i).sum(); // sum of sci.returns_tp
+			double tp_returns = sci.returns_tp.stream().mapToDouble(i -> i).sum(); // sum of sci.returns_tp, returns across all ideas in this tp
 			sci.overall_returns_tp.add(tp_returns);
 		}
 	}

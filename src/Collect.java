@@ -84,8 +84,8 @@ class Collect {
 		}
 		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V0_data.csv", append);
 
-		// saving all action spaces accessed by scientist in the model
-		str = new StringBuilder("sci_id, tp, age");
+		// saving all action spaces chosen by scientists in the model (not all possible action spaces)
+		str = new StringBuilder("sci_id, tp, age, actual_returns");
 		for (int i=0; i<Config.max_ideas; i++) str.append(",").append(i);
 		str.append(System.lineSeparator());
 		for (ArrayList<Integer> a : model.transactions) {
@@ -96,26 +96,28 @@ class Collect {
 				continue;
 			}
 
-			int sci_id = a.get(0);
+			int sci_id = a.get(0); // index of scientist in model scientist list
 			int tp = a.get(1);
 			int sci_age = tp - tp_born[sci_id]; // use scientist age --> alpha, convert using sci_id
+			double sci_tp_returns = model.scientist_list.get(sci_id).overall_returns_tp.get(sci_age); // overall_returns_tp idx based on scientist age, not model tp
 			str.append(sci_id).append(",")
 					.append(tp).append(",")
-					.append(sci_age);
-			for (int x : a) str.append(",").append(x);
+					.append(sci_age).append(",")
+					.append(Functions.round_double(sci_tp_returns));
+			for (int x=2; x<a.size(); x++) str.append(",").append(a.get(x));
 			str.append(System.lineSeparator());
 		}
-		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V1_data.csv", false);
+		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V1_data.csv", append);
 	}
 
 	void collect_data() {
 		// FOR SCIENTISTS
-		ArrayList<ArrayList<Double>> sci_overall_returns_tp = new ArrayList<>(); // Effort by time period, DataFrame
+		ArrayList<ArrayList<Double>> sci_overall_returns_tp = new ArrayList<>(); // Returns by time period, DataFrame
 		for (Scientist sci : model.scientist_list) sci_overall_returns_tp.add(sci.overall_returns_tp);
 		Functions.double_arraylist_2d_to_csv(sci_overall_returns_tp, "sci_overall_returns_tp", "tp", model);
 
 		// FOR IDEAS
-		ArrayList<ArrayList<Double>> idea_effort_by_tp = new ArrayList<>(); // Overall returns by time period, DataFrame
+		ArrayList<ArrayList<Double>> idea_effort_by_tp = new ArrayList<>(); // Effort by time period, DataFrame
 		ArrayList<ArrayList<Integer>> idea_num_k_by_tp = new ArrayList<>(); // Number of researchers by time period, DataFrame
 		for (Idea i : model.idea_list) idea_effort_by_tp.add(i.effort_by_tp);
 		for (Idea i : model.idea_list) idea_num_k_by_tp.add(i.num_k_by_tp);

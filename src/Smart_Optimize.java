@@ -136,9 +136,17 @@ class Smart_Optimize {
 		for (Map.Entry<Integer, Double> entry : final_effort_alloc.entrySet()) {
 			int idea_idx = entry.getKey();
 			double eff = entry.getValue();
-			inv_dict.get("idea_idx").add((double) idea_idx);
-			inv_dict.get("marg_eff").add(eff);
-			inv_dict.get("k_paid").add((sci.ideas_k_paid_tot.get(idea_idx) == 0) ? 1.0 : 0.0);
+
+			// NOTE: IF STATEMENT SHOULD ALWAYS BE TRUE BECAUSE EACH ELEMENT IN FINAL_EFFORT_ALLOC IS A UNIQUE IDEA
+			// keeping this format for consistency with Optimize class's update_df()
+			int idx = inv_dict.get("idea_idx").indexOf((double) idea_idx);
+			if (idx == -1) { // doesn't contain idea_idx yet, add new entry
+				inv_dict.get("idea_idx").add((double) idea_idx);
+				inv_dict.get("marg_eff").add(eff);
+				inv_dict.get("k_paid").add((sci.ideas_k_paid_tot.get(idea_idx) == 0) ? 1.0 : 0.0);
+			} else { // update existing entry for marginal effort (k_paid doesn't need to be updated cuz it's a constant)
+				Functions.arr_increment_double(inv_dict.get("marg_eff"), idx, eff); // += eff
+			}
 		}
 
 		return inv_dict;
