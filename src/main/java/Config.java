@@ -45,16 +45,22 @@ class Config implements java.io.Serializable {
     double o_e = 0.25;
     HashMap<Integer, Double> grant_buckets = new HashMap<>();
     
-    boolean funding = false;
     boolean equal_returns = true;
     boolean smart_opt = true;
+    boolean funding = true;
+    boolean use_neural = true;
 
     static int max_weight = 3; // for branch tree purposes
 
-    Config() {
+    Config(boolean train_data) {
         get_path();
         load_global_constants();
         set_seed();
+
+        if (train_data) { // train data without funding and neural
+            use_neural = false;
+            funding = false;
+        }
 
         if (funding) { // update grant buckets
             grant_buckets.put(1, y_k_n);

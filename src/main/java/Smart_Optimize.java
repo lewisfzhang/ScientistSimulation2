@@ -8,6 +8,27 @@ class Smart_Optimize {
 	ArrayList<Integer> line; // keeps track of discovered ideas where k was already paid by last tp
 	boolean is_line = false;
 
+	double[] V0_val_list; // initialize all values to 0
+
+	// compute V0's for all discovered ideas in this tp --> can compute now because state space states constant within a tp --> speed up performance hopefully
+	void compute_V0(Scientist sci) {
+		V0_val_list = new double[sci.model.idea_list.size()]; // initialize all values to 0
+		if (sci.model.config.use_neural) {
+			for (int idx=0; idx<sci.discov_ideas.size(); idx++) { // discov ideas should be same size as idea_list because it tracks idx of idea in idea_list
+				if (sci.discov_ideas.get(idx) == 1) { // discovered
+					Idea i = sci.model.idea_list.get(idx);
+					double q = i.num_k_total;
+					double T = i.total_effort; // total effort T
+					double max = sci.perceived_rewards.get("Idea Max").get(idx); // M
+					double mean = sci.perceived_rewards.get("Idea Mean").get(idx); // lambda
+					double sds = sci.perceived_rewards.get("Idea SDS").get(idx); // sigma
+					double[] in_vec = {q, T, max, mean, sds}; // q, T, max, mean, sds
+					V0_val_list[idx] = sci.model.neural.predict(0, sci.age, in_vec);
+				}
+			}
+		}
+	}
+
 	// Feed Array list of d, not p ideas into the binary tree
 	// Run Lagrange optimization algorithm on every node in the binary tree
 	// Choose the allocation of effort that maximizes utility in current time period
@@ -17,6 +38,8 @@ class Smart_Optimize {
 		BTree b = new BTree(sci.ideas_k_paid_tot, sci.discov_ideas);
 		line = b.line;
 		double max = Integer.MIN_VALUE;
+
+		if (sci.model.config.use_neural) compute_V0(sci); // store state space V predictions
 
 		if (!line.isEmpty()) { // if line isn't empty --> ideas have already been learned
 			is_line = true;
@@ -102,7 +125,10 @@ class Smart_Optimize {
 
 		double max_sum = Integer.MIN_VALUE;
 		for (HashMap<Integer, Double> temp_temp_effort_alloc : effort_perm_gen) { // temp_temp_effort_alloc stores idea_idx as key, eff in each idea as value
-			int curr_sum = 0;
+			if (temp_temp_effort_alloc.size() > sci.model.config.max_ideas) continue; // don't include generations where effort is allocated across more than max_ideas number of ideas
+
+			double U_e_sum = 0;
+			ArrayList<Double> all_V0 = new ArrayList<>(); // stores V0's based on each idea to be used --> then updated to array in
 			for (Map.Entry<Integer, Double> entry : temp_temp_effort_alloc.entrySet()) {
 				int idx = entry.getKey(); // idx is index of idea
 				double eff = entry.getValue();
@@ -116,14 +142,22 @@ class Smart_Optimize {
 					double end_idx = start_idx + eff * q; // T + e * q --> if learned already
 					if (sci.ideas_k_paid_tot.get(idx) == 0) {end_idx += eff;} // q + 1 if haven't learned
 
-					double U_e_present = Idea.get_returns(mean, sds, max, start_idx, end_idx) / q;
-					double V_a_future = 0;
-					double V_a_present = U_e_present + sci.model.config.BETA * V_a_future;
-					curr_sum += V_a_present; // get sum of returns across ideas
+					U_e_sum += Idea.get_returns(mean, sds, max, start_idx, end_idx) / q; // get sum of returns across ideas (U_e only, not V_a)
+					if (sci.model.config.use_neural) all_V0.add(V0_val_list[idx]);
+
 				}
 			}
-			if (curr_sum > max_sum) {
-				max_sum = curr_sum;
+
+			double V_a_future = 0;
+			if (sci.model.config.use_neural) {
+				double[] in = new double[sci.model.config.max_ideas]; // input vector for V1, values initialized to 0 by default
+				for (int i=0; i<all_V0.size(); i++) in[i] = all_V0.get(i); // transfer all elements of all_V0 to array in, the input vector
+				V_a_future = sci.model.neural.predict(1, sci.age, in);
+			}
+			double V_a_present = U_e_sum + sci.model.config.BETA * V_a_future;
+
+			if (V_a_present > max_sum) {
+				max_sum = V_a_present;
 				temp_effort_alloc = temp_temp_effort_alloc;
 			}
 		}

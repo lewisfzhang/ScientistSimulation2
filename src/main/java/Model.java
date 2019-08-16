@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 class Model implements java.io.Serializable {
 	// initiates the key parameters within the model, as set in config
 	Config config;
+	Neural neural;
 
 	// SCALARS, all updated in model step
 	int num_sci;
@@ -23,6 +24,7 @@ class Model implements java.io.Serializable {
 	// model constructor
 	Model(Config config) {
 		this.config = config;
+		if (config.smart_opt && config.use_neural) neural = new Neural(config); // only add neural net if we are not training
 	}
 
 	// defines the process for one time period within the model

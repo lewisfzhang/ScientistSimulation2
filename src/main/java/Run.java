@@ -4,7 +4,9 @@ public class Run {
         boolean save_model = true;
         boolean use_collect = true;
         boolean append_data = false;
-        Config config = new Config();
+        boolean train_data = false; // NOTE: if you want to use neural or funding, this must be false --> to change neural or funding, go to Config class file
+
+        Config config = new Config(train_data);
         Time tot = new Time("total time");
         Model model;
         Collect collect;
