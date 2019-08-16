@@ -1,5 +1,6 @@
 # neural_net.py
 
+# remove warnings
 import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
@@ -8,16 +9,14 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import *
 import sklearn.metrics as metr
 import subprocess as s
-# remove warnings
-import warnings as w
-w.filterwarnings("ignore", message="numpy.dtype size changed")
-w.filterwarnings("ignore", message="numpy.ufunc size changed")
+import h5py
 
 
 class NeuralNet:
     def __init__(self, name):
         self.EPOCHS = 15
-        self.INPUT_VEC = 20
+        self.NUM_SAMPLES = 3
+        self.test_prop = 0.05
         self.name = name
 
         self.path = '../data/nn/{}/'.format(name)
@@ -31,20 +30,12 @@ class NeuralNet:
     def set_train_data(self, big_data):
         print('Data set shape', big_data.shape)
 
-        len = big_data.shape[1] - 1
+        len = big_data.shape[1] - 1  # last column is the actual value to train against
         # slice data, where last column in 2D big_data is the expected output, other columns before are inputs
         # each row in big_data is a vector
         # random-state sets shuffling of test and train data constant for repeatable results
-        self.train_data, self.test_data, self.train_labels, self.test_labels = train_test_split(big_data[:, :len], big_data[:, len], test_size=0.25)
+        self.train_data, self.test_data, self.train_labels, self.test_labels = train_test_split(big_data[:, :len], big_data[:, len], test_size=self.test_prop)
         # print(self.train_data, '\n', self.test_data, '\n', self.train_labels, '\n', self.test_labels)
-
-        print("Training set: {}".format(self.train_data.shape))
-        print("Testing set:  {}".format(self.test_data.shape))
-
-    def set_vector_data(self, in_vec, out):
-        # format input vector to have constant number of vectors
-        in_vec = np.asarray([self.set_vector(row) for row in in_vec])
-        self.train_data, self.test_data, self.train_labels, self.test_labels = train_test_split(in_vec, out, test_size=0.25)
 
         print("Training set: {}".format(self.train_data.shape))
         print("Testing set:  {}".format(self.test_data.shape))
@@ -66,6 +57,8 @@ class NeuralNet:
 
         self.model.summary()
 
+        print("\nDone building model...\n")
+
     def train_model(self):
         tbCallBack = keras.callbacks.TensorBoard(log_dir=self.path, histogram_freq=0, write_graph=True, write_images=True)
         checkpointer = keras.callbacks.ModelCheckpoint(filepath=self.path+'best_weight.hdf5', verbose=0, save_best_only=True)  # save best model
@@ -74,6 +67,12 @@ class NeuralNet:
                             # verbose: 0 for no logging to stdout, 1 for progress bar logging, 2 for one log line per epoch
                             batch_size=32, validation_split=0.2, verbose=2,
                             callbacks=[self.PrintDot(), tbCallBack, checkpointer])
+
+        print("\nDone training model...\n")
+
+    def save_model(self):
+        self.model.save(self.path + "model.h5")
+        print("\nDone saving model...\n")
 
     def check1(self):
         self.plot_history()
@@ -84,9 +83,13 @@ class NeuralNet:
         print('Average accuracy', accuracy)
 
         print('\nCheck to see if above data makes sense...')
-        for i in range(5):  # get 10 samples
-            print('Predicted:', round(self.model.predict(self.test_data).flatten()[i],1), end=" | ")
+        out = self.model.predict(self.test_data).flatten()
+        for i in range(self.NUM_SAMPLES):  # get 10 samples
+            print('\nInput:', self.test_data[i])
+            print('Predicted:', round(out[i], 1), end=" | ")
             print('Actual:', self.test_labels[i])
+
+        print("\nDone check1 model...\n")
 
     def check2(self):
         self.model.load_weights(self.path+'best_weight.hdf5')  # load weights from best model
@@ -99,10 +102,7 @@ class NeuralNet:
         # Plot the chart
         self.chart_regression(pred.flatten(), self.test_labels)  # sort is True by default
 
-    def save_nn(self):
-        print('\nsaving models...\n\n')
-        self.model.save(self.path+'model.h5')
-        self.model.save('results/model_{}.h5'.format(self.EPOCHS))
+        print("\nDone check2 model...\n")
 
     class PrintDot(keras.callbacks.Callback):
         def on_epoch_end(self, epoch, logs):
@@ -138,7 +138,25 @@ class NeuralNet:
         plt.savefig(self.path + name)
         plt.close()
 
-    def set_vector(self, row): # zero padding for varying input sizes
-        num_0 = self.INPUT_VEC - len(row)
-        for i in range(num_0):
-            row.append(0)
+    # def set_vector_data(self, in_vec, out):
+    #     # format input vector to have constant number of vectors
+    #     in_vec = np.asarray([self.set_vector(row) for row in in_vec])
+    #     self.train_data, self.test_data, self.train_labels, self.test_labels = train_test_split(in_vec, out, test_size=self.test_prop)
+    #
+    #     print("Training set: {}".format(self.train_data.shape))
+    #     print("Testing set:  {}".format(self.test_data.shape))
+    #
+    # def set_vector(self, row): # zero padding for varying input sizes
+    #     num_0 = self.INPUT_VEC - len(row)
+    #     for i in range(num_0):
+    #         row.append(0)
+    #
+    # def predict(self, input):
+    #     if input.shape != self.test_data.shape:
+    #         raise Exception("input layer not valid! input shape: {0}, output shape: {1}".format(input.shape, self.test_data.shape))
+    #     return self.model.predict()
+    #
+    # def save_nn(self):
+    #     print('\nsaving models...\n\n')
+    #     self.model.save(self.path+'model.h5')
+    #     self.model.save('results/model_{}.h5'.format(self.EPOCHS))
