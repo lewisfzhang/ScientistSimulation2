@@ -18,7 +18,7 @@ MAX_IDEAS = int(input_list[1][1])  # same as in Config file, max number of ideas
 BETA = float(input_list[2][1])  # coefficient for NPV, determined by discount rate r ~ 3%
 
 def main():
-    # train_v0()
+    train_v0()
     train_v1()
 
 
@@ -41,7 +41,7 @@ def train_v0():
         net.save_model()
 
         net.check1()
-        net.check2()
+        # net.check2()
 
         net_list.append(net)
 
@@ -111,7 +111,7 @@ def train_v1():
         net.train_model()
         net.save_model()
         net.check1()
-        net.check2()
+        # net.check2()
 
         load_net = brain.Brain.load_brain("V1_{}".format(age))  # NOTE: adding Brain class as element, not the Neural Net class
         V1_net_list[age] = load_net  # add current net --> V_age to its respective index/position in V1_net_list by age
