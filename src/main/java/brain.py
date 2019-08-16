@@ -6,6 +6,7 @@ import warnings as w
 w.filterwarnings("ignore")
 from tensorflow import keras
 import numpy as np
+import subprocess as s
 
 
 class Brain:
@@ -22,5 +23,6 @@ class Brain:
 
     @staticmethod
     def load_brain(name):
-        path = '../data/nn/{}/model.h5'.format(name)
+        git_dir = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        path = '{0}/data/nn/{1}/model.h5'.format(git_dir, name)
         return Brain(keras.models.load_model(path))

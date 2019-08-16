@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import *
 import sklearn.metrics as metr
 import subprocess as s
-import h5py
-
 
 class NeuralNet:
     def __init__(self, name):
@@ -19,7 +17,8 @@ class NeuralNet:
         self.test_prop = 0.05
         self.name = name
 
-        self.path = '../data/nn/{}/'.format(name)
+        self.GIT_DIR = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        self.path = self.GIT_DIR+'/data/nn/{}/'.format(name)
         s.call("rm -r "+self.path, shell=True)
         s.call("mkdir "+self.path, shell=True)
 

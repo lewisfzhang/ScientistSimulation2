@@ -4,7 +4,10 @@ w.filterwarnings("ignore")
 import neural_net as nn
 import numpy as np
 import brain
+import subprocess as s
 
+
+GIT_DIR = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
 
 # read in global_config parameters shared between JAVA and Python
 with open('global_config.txt', 'r') as f:
@@ -13,7 +16,6 @@ with open('global_config.txt', 'r') as f:
 TP_ALIVE = int(input_list[0][1])  # num tp a scientist is alive in the model
 MAX_IDEAS = int(input_list[1][1])  # same as in Config file, max number of ideas in action space
 BETA = float(input_list[2][1])  # coefficient for NPV, determined by discount rate r ~ 3%
-
 
 def main():
     # train_v0()
@@ -25,7 +27,7 @@ def train_v0():
     # import data
     # create neural nets
     # sort data into appropriate neural net
-    big_data = np.loadtxt(open("../data/nn/V0_data.csv", "rb"), delimiter=",", skiprows=1)  # age, q, T, max, mean, sds, impact_left
+    big_data = np.loadtxt(open(GIT_DIR+"/data/nn/V0_data.csv", "rb"), delimiter=",", skiprows=1)  # age, q, T, max, mean, sds, impact_left
     net_list = []
 
     for i in range(TP_ALIVE):
@@ -55,10 +57,10 @@ def train_v1():
         net = brain.Brain.load_brain("V0_{}".format(i))
         V0_net_list.append(net)
 
-    big_data = np.loadtxt(open("../data/nn/V1_data.csv", "rb"), delimiter=",", skiprows=1)  # sci_id, tp, sci_age, actual_returns, ideas...
-    idea_data = np.loadtxt(open("../data/model/perceived_ideas.csv", "rb"), delimiter=",", skiprows=1)  # sci, idea, max, mean, sds
-    q_data = np.loadtxt(open("../data/model/num_k_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
-    T_data = np.loadtxt(open("../data/model/T_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
+    big_data = np.loadtxt(open(GIT_DIR+"/data/nn/V1_data.csv", "rb"), delimiter=",", skiprows=1)  # sci_id, tp, sci_age, actual_returns, ideas...
+    idea_data = np.loadtxt(open(GIT_DIR+"/data/model/perceived_ideas.csv", "rb"), delimiter=",", skiprows=1)  # sci, idea, max, mean, sds
+    q_data = np.loadtxt(open(GIT_DIR+"/data/model/num_k_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
+    T_data = np.loadtxt(open(GIT_DIR+"/data/model/T_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
 
     V1_net_list = [brain.Brain(None)] * TP_ALIVE  # initiate list of placeholder neural nets
 
