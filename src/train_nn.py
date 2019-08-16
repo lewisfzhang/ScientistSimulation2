@@ -16,7 +16,7 @@ BETA = float(input_list[2][1])  # coefficient for NPV, determined by discount ra
 
 
 def main():
-    train_v0()
+    # train_v0()
     train_v1()
 
 
