@@ -1,6 +1,3 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -86,11 +83,11 @@ class Collect {
 
 		// saving all action spaces chosen by scientists in the model (not all possible action spaces)
 		str = new StringBuilder("sci_id, tp, age, actual_returns");
-		for (int i=0; i<Config.max_ideas; i++) str.append(",").append(i);
+		for (int i=0; i<model.config.max_ideas; i++) str.append(",").append(i);
 		str.append(System.lineSeparator());
 		for (ArrayList<Integer> a : model.transactions) {
 			// special unhandled cases
-			if (a.size() <= 2 || a.size() - 2 >= Config.max_ideas) { // exceeds action space num_ideas, or no ideas in action space
+			if (a.size() <= 2 || a.size() - 2 > model.config.max_ideas) { // exceeds action space num_ideas, or no ideas in action space
 				System.out.println("\nERROR: action space invalid...see collect.neural_net_data()");
 				System.out.println(a + "\n");
 				continue;
@@ -104,7 +101,8 @@ class Collect {
 					.append(tp).append(",")
 					.append(sci_age).append(",")
 					.append(Functions.round_double(sci_tp_returns));
-			for (int x=2; x<a.size(); x++) str.append(",").append(a.get(x));
+			for (int x=2; x<a.size(); x++) str.append(",").append(a.get(x)); // append all ideas in action space
+			for (int x=0; x<model.config.max_ideas-(a.size() - 2); x++) str.append(",").append(-1);
 			str.append(System.lineSeparator());
 		}
 		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V1_data.csv", append);

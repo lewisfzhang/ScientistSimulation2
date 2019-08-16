@@ -115,7 +115,11 @@ class Smart_Optimize {
 					double start_idx = i.total_effort; // total effort T
 					double end_idx = start_idx + eff * q; // T + e * q --> if learned already
 					if (sci.ideas_k_paid_tot.get(idx) == 0) {end_idx += eff;} // q + 1 if haven't learned
-					curr_sum += Idea.get_returns(mean, sds, max, start_idx, end_idx) / q; // get sum of returns across ideas
+
+					double U_e_present = Idea.get_returns(mean, sds, max, start_idx, end_idx) / q;
+					double V_a_future = 0;
+					double V_a_present = U_e_present + sci.model.config.BETA * V_a_future;
+					curr_sum += V_a_present; // get sum of returns across ideas
 				}
 			}
 			if (curr_sum > max_sum) {

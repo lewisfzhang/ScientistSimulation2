@@ -25,7 +25,12 @@ public class Run {
         if (use_collect) {
             collect = new Collect(model);
             Time t = new Time("collect");
+
+            System.out.print("\ncollect_data()");
             collect.collect_data();
+            t.stop_time();
+
+            System.out.print("\nneural_net_data()");
             collect.neural_net_data(append_data);
             t.stop_time();
 

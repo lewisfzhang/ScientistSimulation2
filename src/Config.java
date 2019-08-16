@@ -1,5 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Scanner;
 
 class Config implements java.io.Serializable {
     String parent_dir;
@@ -11,7 +14,11 @@ class Config implements java.io.Serializable {
     int time_periods = 20;
     int ideas_per_time = 10;
     int sci_rate = 10;
-    int tp_alive = 8;
+
+    // GLOBAL CONSTANTS
+    int tp_alive;
+    int max_ideas; // handles vector input size for V1 --> scientist action space should not exceed max_ideas --> scientist should not discover more than 20 ideas
+    double BETA; // coefficient for NPV, determined by discount rate r
 
     // related to idea
     int idea_mean = 300;
@@ -41,11 +48,11 @@ class Config implements java.io.Serializable {
     boolean equal_returns = true;
     boolean smart_opt = true;
 
-    static int max_ideas = 20; // handles vector input size for V1 --> scientist action space should not exceed max_ideas --> scientist should not discover more than 20 ideas
     static int max_weight = 3; // for branch tree purposes
 
     Config() {
         get_path();
+        load_global_constants();
         set_seed();
 
         if (funding) { // update grant buckets
@@ -67,6 +74,21 @@ class Config implements java.io.Serializable {
         int start = testPath.indexOf("/");
         int end = testPath.indexOf("ScientistSimulation2") + "ScientistSimulation2".length();
         parent_dir = testPath.substring(start, end); // from first backslash / up to ...ScientistSimulation2
+    }
+
+    void load_global_constants() {
+        try {
+            Scanner sc = new Scanner(new File(parent_dir + "/src/global_config.txt"));
+            sc.next();
+            tp_alive = sc.nextInt();
+            sc.next();
+            max_ideas = sc.nextInt();
+            sc.next();
+            BETA = sc.nextDouble();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     void set_seed() {
