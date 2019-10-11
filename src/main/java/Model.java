@@ -39,12 +39,13 @@ class Model implements java.io.Serializable {
 		int ideas_last_tp = birth_new_ideas(); // keep track of how many old ideas so we only have to update new ideas
 		update_scientist_idea(ideas_last_tp);
 
-		if (config.funding) distribute_funding();
+		if (config.funding) distribute_funding(); // distribute grants if funding is turned on in config
 
 		for (Scientist sci : scientist_list) {
-			sci.step();
+			sci.step(); // initiate the scientist step function including optimization (in scientist class)
 		}
 
+		// update based on scientist optimization patters
 		update_objects();
 		pay_out_returns();
 
@@ -147,22 +148,23 @@ class Model implements java.io.Serializable {
 		ArrayList<Scientist> old_sci = new ArrayList<>();
 		ArrayList<Scientist> young_sci = new ArrayList<>();
 		for(Scientist sci : scientist_list) {
-			if(sci.age < (int) (0.5 * (double) sci.tp_alive)) young_sci.add(sci);
-			else if(sci.age < sci.tp_alive) old_sci.add(sci);
+			if(sci.age < (int) (0.5 * (double) sci.tp_alive)) young_sci.add(sci); // define young scientists as less than halfway through their "lifespan"
+			else if(sci.age < sci.tp_alive) old_sci.add(sci); // define old scientists as those more than halfway through their lives
 		}
 		int scientists_alive = young_sci.size() + old_sci.size();
 
-		double total_budget = config.budget_prop * scientists_alive * config.start_effort_mean;
-		double e_grant_size = config.e_grant_size_prop * total_budget;
+		double total_budget = config.budget_prop * scientists_alive * config.start_effort_mean; // total budget set as proportion of total effort in population
+		double e_grant_size = config.e_grant_size_prop * total_budget; // divvies up the e grants into appropriate sizes
 
-		for(int i = 1; i <= 6; i++) { // i refers to bucket number
-			double grant_budget = config.grant_buckets.get(i) * total_budget;
+		for(int i = 1; i <= 6; i++) { // i refers to bucket number; loop through each bucket to distribute grants
+			double grant_budget = config.grant_buckets.get(i) * total_budget; // set total budget for specific grant type
 			ArrayList<Scientist> young_sci_eligible = new ArrayList<>(young_sci);
 			ArrayList<Scientist> old_sci_eligible = new ArrayList<> (old_sci);
+			// distribute grants while the budget is greater than 0
 			while(grant_budget > 0) {
 				if ((i <= 3 && young_sci_eligible.size() > 0) || (i > 3 && old_sci_eligible.size() > 0)) {
 					double grant_size = assign_individual_grants(i, e_grant_size, grant_budget, young_sci_eligible, old_sci_eligible);
-					if(grant_budget - Math.abs(grant_size) >= 0) grant_budget -= Math.abs(grant_size);
+					if(grant_budget - Math.abs(grant_size) >= 0) grant_budget -= Math.abs(grant_size); // subtract grant size from budget if funding still available
 					else break; // if the budget is less than grant size, don't distribute grant --> out of money
 				}
 				else break; // no scientist of grant type available to give funding to
@@ -177,9 +179,11 @@ class Model implements java.io.Serializable {
 		double grant_size = 0;
 
 		Scientist sci;
+		int sci_ideas = 0;
 		if(young_sci_rec) { // selects a random young scientist
 			int recipient = Functions.get_random_int(0, young_sci.size(), config);
 			sci = young_sci.get(recipient);
+
 		} else { // selects a random old scientist
 			int recipient = Functions.get_random_int(0, old_sci.size(), config);
 			sci = old_sci.get(recipient);

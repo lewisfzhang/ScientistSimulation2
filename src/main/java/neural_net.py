@@ -15,7 +15,7 @@ class NeuralNet:
         self.name = name
 
         self.GIT_DIR = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
-        self.path = self.GIT_DIR+'/data/nn/{}/'.format(name)
+        self.path = '/Users/conradmilhaupt/Documents/ScientistSimulation2/data/nn/{}/'.format(name)
         s.call("rm -r "+self.path, shell=True)
         s.call("mkdir "+self.path, shell=True)
 

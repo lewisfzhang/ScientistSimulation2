@@ -8,6 +8,19 @@ class Collect {
 		this.model = model;
 	}
 
+	double scientist_performance() {
+		int num_scientists = model.scientist_list.size();
+		double total_returns = 0;
+		for(int i = 0; i < model.scientist_list.size(); i++) {
+			Scientist sci = model.scientist_list.get(i);
+			for(int t = 0; t < sci.overall_returns_tp.size(); t++) {
+				total_returns += sci.overall_returns_tp.get(t);
+			}
+		}
+		double returns_per_sci = total_returns / num_scientists;
+		return returns_per_sci;
+	}
+
 	// saves all necessary training data to CSV
 	void neural_net_data(boolean append) {
 		int[][] num_k_total_idea_tp = new int[model.idea_list.size()][model.config.time_periods]; // get Q --> exp number of scientists who have worked on each idea per tp
@@ -41,14 +54,15 @@ class Collect {
 						.append(Functions.round_double(mean)).append(",")
 						.append(Functions.round_double(sds)).append(System.lineSeparator());
 			}
+			Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/model/perceived_ideas.csv", true);
+			str = new StringBuilder();
 		}
-		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/model/perceived_ideas.csv", false);
 
 		// finding the tp that each scientist was born
 		int[] tp_born = new int[model.scientist_list.size()];
 		int idx = 0;
-		for (int tp = 0; tp<model.num_sci_tp.size(); tp++) {
-			for (int j=0; j<model.num_sci_tp.get(tp); j++) {
+		for (int tp = 0; tp < model.num_sci_tp.size(); tp++) {
+			for (int j = 0; j < model.num_sci_tp.get(tp); j++) {
 				tp_born[idx] = tp;
 				idx++;
 			}
@@ -56,30 +70,38 @@ class Collect {
 
 		// saving all possible state spaces
 		str = new StringBuilder("age, q, T, max, mean, sds, impact_left").append(System.lineSeparator()); // columns in the CSV file
+		int counter = 0;
 		for (Scientist sci : model.scientist_list) {
-			for (int age = 0; age<sci.tp_alive; age++) {
-				// int age_left = sci.tp_alive - age;
-				int tp = age + tp_born[sci.id];
-				if (tp >= model.config.time_periods) tp = model.config.time_periods - 1; // keep array in bounds, doesn't matter if some data on older scientists is cut
-				for (int idea_idx=0; idea_idx<model.idea_list.size(); idea_idx++) {
-					Idea i = model.idea_list.get(idea_idx);
-					int q = num_k_total_idea_tp[idea_idx][tp];
-					double T = T_total_idea_tp[idea_idx][tp];
-					double max = sci.perceived_rewards.get("Idea Max").get(idea_idx);
-					double mean = sci.perceived_rewards.get("Idea Mean").get(idea_idx);
-					double sds = sci.perceived_rewards.get("Idea SDS").get(idea_idx);
-					double impact_left = i.idea_max * (1 - Idea.logistic_cdf(T, i.idea_mean, i.idea_sds));
-					str.append(age).append(",")
-							.append(q).append(",")
-							.append(Functions.round_double(T)).append(",")
-							.append(Functions.round_double(max)).append(",")
-							.append(Functions.round_double(mean)).append(",")
-							.append(Functions.round_double(sds)).append(",")
-							.append(Functions.round_double(impact_left)).append(System.lineSeparator());
+			if(counter < 2000000) {
+				for (int age = 0; age < sci.tp_alive; age++) {
+					// int age_left = sci.tp_alive - age;
+					int tp = age + tp_born[sci.id];
+					if (tp >= model.config.time_periods)
+						tp = model.config.time_periods - 1; // keep array in bounds, doesn't matter if some data on older scientists is cut
+					for (int idea_idx = 0; idea_idx < model.idea_list.size(); idea_idx++) {
+						Idea i = model.idea_list.get(idea_idx);
+						int q = num_k_total_idea_tp[idea_idx][tp];
+						double T = T_total_idea_tp[idea_idx][tp];
+						double max = sci.perceived_rewards.get("Idea Max").get(idea_idx);
+						double mean = sci.perceived_rewards.get("Idea Mean").get(idea_idx);
+						double sds = sci.perceived_rewards.get("Idea SDS").get(idea_idx);
+						double impact_left = i.idea_max * (1 - Idea.logistic_cdf(T, i.idea_mean, i.idea_sds));
+						str.append(age).append(",")
+								.append(q).append(",")
+								.append(Functions.round_double(T)).append(",")
+								.append(Functions.round_double(max)).append(",")
+								.append(Functions.round_double(mean)).append(",")
+								.append(Functions.round_double(sds)).append(",")
+								.append(Functions.round_double(impact_left)).append(System.lineSeparator());
+						counter++;
+					}
 				}
 			}
+			else {break;}
+			Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V0_data.csv", true);
+			str = new StringBuilder();
 		}
-		Functions.string_to_csv(str.toString(), model.config.parent_dir + "/data/nn/V0_data.csv", append);
+
 
 		// saving all action spaces chosen by scientists in the model (not all possible action spaces)
 		str = new StringBuilder("sci_id, tp, age, actual_returns");

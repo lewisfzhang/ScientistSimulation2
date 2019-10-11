@@ -27,7 +27,7 @@ def train_v0():
     # import data
     # create neural nets
     # sort data into appropriate neural net
-    big_data = np.loadtxt(open(GIT_DIR+"/data/nn/V0_data.csv", "rb"), delimiter=",", skiprows=1)  # age, q, T, max, mean, sds, impact_left
+    big_data = np.loadtxt(open("/Users/conradmilhaupt/Documents/ScientistSimulation2/data/nn/V0_data.csv", "rb"), delimiter=",", skiprows=1)  # age, q, T, max, mean, sds, impact_left
     net_list = []
 
     for i in range(TP_ALIVE):
@@ -57,10 +57,10 @@ def train_v1():
         net = brain.Brain.load_brain("V0_{}".format(i))
         V0_net_list.append(net)
 
-    big_data = np.loadtxt(open(GIT_DIR+"/data/nn/V1_data.csv", "rb"), delimiter=",", skiprows=1)  # sci_id, tp, sci_age, actual_returns, ideas...
-    idea_data = np.loadtxt(open(GIT_DIR+"/data/model/perceived_ideas.csv", "rb"), delimiter=",", skiprows=1)  # sci, idea, max, mean, sds
-    q_data = np.loadtxt(open(GIT_DIR+"/data/model/num_k_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
-    T_data = np.loadtxt(open(GIT_DIR+"/data/model/T_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
+    big_data = np.loadtxt(open("/Users/conradmilhaupt/Documents/ScientistSimulation2/data/nn/V1_data.csv", "rb"), delimiter=",", skiprows=1)  # sci_id, tp, sci_age, actual_returns, ideas...
+    idea_data = np.loadtxt(open("/Users/conradmilhaupt/Documents/ScientistSimulation2/data/model/perceived_ideas.csv", "rb"), delimiter=",", skiprows=1)  # sci, idea, max, mean, sds
+    q_data = np.loadtxt(open("/Users/conradmilhaupt/Documents/ScientistSimulation2/data/model/num_k_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
+    T_data = np.loadtxt(open("/Users/conradmilhaupt/Documents/ScientistSimulation2/data/model/T_total_idea_tp.csv", "rb"), delimiter=",", skiprows=1)[:, 1:]
 
     V1_net_list = [brain.Brain(None)] * TP_ALIVE  # initiate list of placeholder neural nets
 
