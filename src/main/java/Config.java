@@ -11,7 +11,7 @@ class Config implements java.io.Serializable {
     boolean equal_returns = true; // scientists each get returns proportional to the effort invested in the idea
     boolean smart_opt = true;
     boolean funding = false; // whether to implement funding in the model run
-    boolean use_neural = false; // whether to incorporate neural nets in scientist optimization
+    boolean use_neural = true; // whether to incorporate neural nets in scientist optimization
 
     int seed = 123; // ensures that model is consistent run over run, can be changed if want to experiment in new model setting
     int[] seed_array;

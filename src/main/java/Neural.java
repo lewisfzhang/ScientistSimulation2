@@ -3,7 +3,8 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.io.ClassPathResource;
-import java.util.*;
+
+import java.util.ArrayList;
 
 public class Neural {
     // indices by age
